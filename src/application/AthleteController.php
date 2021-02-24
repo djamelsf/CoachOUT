@@ -21,13 +21,9 @@ class AthleteController
         $this->storage=$storage;
 
 
-
-
-
-        
         if($this->autenticationManager->isConnected()){
             echo "--------->";
-            echo $storage->existsAthlete($_SESSION['user']['athlete']['id']);
+            echo $storage->existsAthlete($_SESSION['user']['athlete']['id']); //+type
             echo "<---------";
             $menu = array(
                 "Accueil" => '.',

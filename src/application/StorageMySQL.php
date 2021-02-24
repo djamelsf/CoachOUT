@@ -31,6 +31,10 @@ class StorageMySQL implements Storage {
 		return $this->hydrate($stmt);
 	}
 
+	public function isAthlete($id){
+	    //
+    }
+
 	public function existsAthlete($id){
 		$rq = "SELECT * FROM user WHERE idU= :id";
 		$stmt = $this->connexion->prepare($rq);
@@ -40,9 +44,9 @@ class StorageMySQL implements Storage {
 		$stmt->execute($data);
 		$rs=$this->hydrate($stmt);
 		if (empty($rs)) {
-			return 0;
+			return false;
 		}else{
-			return 1;
+			return true;
 		}
 	}
 
