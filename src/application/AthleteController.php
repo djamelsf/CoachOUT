@@ -22,9 +22,12 @@ class AthleteController
 
 
         if($this->autenticationManager->isConnected()){
-            echo "--------->";
+            echo "//";
+            $id=$_SESSION['user']['athlete']['id'];
             echo $storage->existsAthlete($_SESSION['user']['athlete']['id']); //+type
-            echo "<---------";
+            echo "is Coach?";
+            echo $storage->isCoach($id);
+            echo "//";
             $menu = array(
                 "Accueil" => '.',
                 "Déconnexion" => '?a=deconnexion',
