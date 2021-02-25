@@ -24,10 +24,29 @@ class AthleteController
 
 
         if ($this->autenticationManager->isConnected()) {
-            $menu = array(
-                "Accueil" => '.',
-                "Déconnexion" => '?a=deconnexion',
-            );
+            if($this->storage->isCoach($_SESSION['user']['athlete']['id'])){
+                $menu = array(
+                    "Accueil" => '.',
+                    "Créer un groupe" =>'?a=nouveauGroupe',
+                    "Mes groupes" => '?a=mesGroupes',
+                    "Déconnexion" => '?a=deconnexion',
+                );
+            }else{
+                if($this->storage->isSportif($_SESSION['user']['athlete']['id'])){
+                    $menu = array(
+                        "Accueil" => '.',
+                        "Trouver un groupe" =>'?a=trouverGroupe',
+                        "Créer un activite" => '?a=nouvelleActivite',
+                        "Mes activites" => '?a=mesActivites',
+                        "Déconnexion" => '?a=deconnexion',
+                    );
+                }else{
+                    $menu = array(
+                        "Accueil" => '.',
+                        "Déconnexion" => '?a=deconnexion',
+                    );
+                }
+            }
         } else {
             $menu = array(
                 "Accueil" => '.',
