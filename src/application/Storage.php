@@ -8,6 +8,8 @@ interface Storage {
 
 	public function existsAthlete($id);
 	public function isCoach($id);
+	public function isSportif($id);
+	public function createAthlete(Athlete $athlete);
 }
 
 ?>

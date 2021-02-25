@@ -1,5 +1,7 @@
 <?php
+
 namespace Djs\Application;
+
 use Djs\Framework\Request;
 use Djs\Framework\Response;
 use Djs\Framework\View;
@@ -12,30 +14,24 @@ class AthleteController
     protected $autenticationManager;
     protected $storage;
 
-    public function __construct(Request $request, Response $response, View $view,AutenticationManager $autenticationManager,Storage $storage)
+    public function __construct(Request $request, Response $response, View $view, AutenticationManager $autenticationManager, Storage $storage)
     {
         $this->request = $request;
         $this->response = $response;
         $this->view = $view;
-        $this->autenticationManager=$autenticationManager;
-        $this->storage=$storage;
+        $this->autenticationManager = $autenticationManager;
+        $this->storage = $storage;
 
 
-        if($this->autenticationManager->isConnected()){
-            echo "//";
-            $id=$_SESSION['user']['athlete']['id'];
-            echo $storage->existsAthlete($_SESSION['user']['athlete']['id']); //+type
-            echo "is Coach?";
-            echo $storage->isCoach($id);
-            echo "//";
+        if ($this->autenticationManager->isConnected()) {
             $menu = array(
                 "Accueil" => '.',
                 "Déconnexion" => '?a=deconnexion',
             );
-        }else{
+        } else {
             $menu = array(
                 "Accueil" => '.',
-                "Connexion" => 'http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all"',
+                "Connexion" => 'http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write"',
             );
         }
 
@@ -49,19 +45,21 @@ class AthleteController
      */
     public function execute($action)
     {
-            $this->$action();
+        $this->$action();
     }
 
-    public function deconnexion(){
+    public function deconnexion()
+    {
         echo "helloo";
         $this->autenticationManager->deconnexion();
-        $this->POSTredirect(".","Déconnecté");
+        $this->POSTredirect(".", "Déconnecté");
     }
 
-    public function Oauth(){
-        $data_array =  array(
-            "client_id"        => 58487,
-            "client_secret"   => "94de0c61163e535a4343e5f517bc1cdc073d06f7",
+    public function Oauth()
+    {
+        $data_array = array(
+            "client_id" => 58487,
+            "client_secret" => "94de0c61163e535a4343e5f517bc1cdc073d06f7",
             "code" => $this->request->getGetParam('code'),
             "grant_type" => "authorization_code",
         );
@@ -71,24 +69,37 @@ class AthleteController
         $response = json_decode($make_call, true);
 
         echo $response['athlete']['username'];
-        $_SESSION['user']=$response;
-        $this->POSTredirect(".","HELLO");
+        $_SESSION['user'] = $response;
+        $this->POSTredirect(".", "HELLO");
+    }
+
+    public function getAthlete()
+    {
+        $data_array = array(
+            "access_token" => $_SESSION['user']['access_token'],
+        );
+
+        $make_call = $this->callAPI('GET', 'https://www.strava.com/api/v3/athlete', $data_array);
+
+        $response = json_decode($make_call, true);
+        return $response;
     }
 
     public function defaultAction()
     {
-        if($this->autenticationManager->isConnected()){
-            return $this->afficher();
-
-        }else{
-            return  $this->makeHomePage();
-        }
+//        if($this->autenticationManager->isConnected()){
+//            return $this->afficher();
+//
+//        }else{
+        return $this->makeHomePage();
+//        }
 
     }
 
-    public function afficher(){
-        $data_array =  array(
-            "access_token"=> $_SESSION['user']['access_token'],
+    public function afficher()
+    {
+        $data_array = array(
+            "access_token" => $_SESSION['user']['access_token'],
         );
 
         $make_call = $this->callAPI('GET', 'https://www.strava.com/api/v3/athlete/activities', $data_array);
@@ -101,16 +112,62 @@ class AthleteController
     }
 
 
-    public function makeHomePage() {
-        $title = "Bienvenue !";
-        $content= "Bienvenue sur STRAVA API.";
-        $this->view->setPart('title', $title);
+    public function makeHomePage()
+    {
+        if ($this->autenticationManager->isConnected()) {
+            if ($this->storage->existsAthlete($_SESSION['user']['athlete']['id'])) {
+                if ($this->storage->isCoach($_SESSION['user']['athlete']['id'])) {
+                    $title = "Bienvenue !";
+                    $content = "Bienvenue Coach! dans Strava!.";
+                    $this->view->setPart('title', $title);
+                    $this->view->setPart('content', $content);
+                } else {
+                    echo 'SPORTIF OK';
+                }
+            } else {
+                $this->POSTredirect('?a=inscriptionAthlete', 'inscription requise');
+            }
+        } else {
+            $title = "Bienvenue !";
+            $content = "Bienvenue sur STRAVA API.";
+            $this->view->setPart('title', $title);
+            $this->view->setPart('content', $content);
+        }
+
+
+    }
+
+    public function inscriptionAthlete()
+    {
+        $content = '';
+        $content .= '<form method="post" action="?a=sauverInscription">';
+        $content .= '<p>etes vous un coach ou un sportif ?</p>';
+        $content .= '<input name="nom" type="text" value="' . $_SESSION['user']['athlete']['firstname'] . '" disabled>';
+        $content .= '<input name="prenom" type="text" value="' . $_SESSION['user']['athlete']['lastname'] . '" disabled>';
+        $content .= 'Coach ou Sportif ? <select name="type" required>';
+        $content .= '<option value="coach">Coach</option>';
+        $content .= '<option value="sportif">Sportif</option>';
+        $content .= '</select>';
+        $content .= '<input type="submit">';
+        $content .= '</form>';
+
+        $this->view->setPart('title', 'Inscription');
         $this->view->setPart('content', $content);
     }
 
-    public function callAPI($method, $url, $data=false){
+    public function sauverInscription()
+    {
+        $a = $this->getAthlete();
+        $athlete = new Athlete($a['id'], $a['lastname'], $a['firstname'], $a['weight'], $_POST['type']);
+        $this->storage->createAthlete($athlete);
+        $this->POSTredirect('.', 'Inscription faite');
+
+    }
+
+    public function callAPI($method, $url, $data = false)
+    {
         $curl = curl_init();
-        switch ($method){
+        switch ($method) {
             case "POST":
                 curl_setopt($curl, CURLOPT_POST, 1);
                 if ($data)
@@ -134,14 +191,17 @@ class AthleteController
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         // EXECUTE:
         $result = curl_exec($curl);
-        if(!$result){die("Connection Failure");}
+        if (!$result) {
+            die("Connection Failure");
+        }
         curl_close($curl);
         return $result;
     }
 
-    public function POSTredirect($url, $feedback){
+    public function POSTredirect($url, $feedback)
+    {
         $_SESSION['feedback'] = $feedback;
-        header("Location: ".htmlspecialchars_decode($url), true, 303);
+        header("Location: " . htmlspecialchars_decode($url), true, 303);
         die;
     }
 
