@@ -32,10 +32,10 @@ class StorageMySQL implements Storage {
 
     public function createActivite(Activite $activite)
     {
-        $rq = "INSERT INTO activite (idAc,nom,description,distance,date,elapsed_time,idU) VALUES (:id,:nom,:description,:distance,:date,:elapsed_time,:idU)";
+        $rq = "INSERT INTO activite (idAc,nom,description,distance,date,elapsed_time,idU) VALUES (:idAc,:nom,:description,:distance,:date,:elapsed_time,:idU)";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
-            ':id' => $activite->getIdAc(),
+            ':idAc' => $activite->getIdAc(),
             ':nom' => $activite->getNom(),
             ':description' => $activite->getDescription(),
             ':distance' => $activite->getDistance(),
@@ -99,10 +99,25 @@ class StorageMySQL implements Storage {
 
 	}
 
+	public function getMyActivites($id)
+    {
+        $rq = "SELECT * FROM activite WHERE idU= :idU";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idU' => $id,
+        );
+        $stmt->execute($data);
+        $tab=[];
+        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            array_push($tab, new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time']));
+        }
+
+        print_r($tab);
+        return $tab;
+    }
 
 
-
-	public function hydrate($stmt){
+    public function hydrate($stmt){
 		$tab=[];
 		while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
 			$tab[$setup['idU']]=new Athlete($setup['idU'],$setup['nom'],$setup['prenom'],$setup['weight'],$setup['type']);

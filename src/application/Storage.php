@@ -11,6 +11,7 @@ interface Storage {
 	public function isSportif($id);
 	public function createAthlete(Athlete $athlete);
 	public function createActivite(Activite $activite);
+	public function getMyActivites($id);
 }
 
 ?>

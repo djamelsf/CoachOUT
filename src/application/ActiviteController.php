@@ -43,7 +43,7 @@ class ActiviteController{
                         "Accueil" => '.',
                         "Trouver un groupe" =>'?a=trouverGroupe',
                         "Créer un activite" => '?o=activite&a=nouvelleActivite',
-                        "Mes activites" => '?a=mesActivites',
+                        "Mes activites" => '?o=activite&a=mesActivites',
                         "Déconnexion" => '?a=deconnexion',
                     );
                 }else{
@@ -112,13 +112,18 @@ class ActiviteController{
 
         $response = json_decode($make_call, true);
 
-        $activite=new Activite($response['id'],$response['name'],$response['description'],$response['distance'],$response['start_date_local'],$response['elapsed_time']);
 
+        $activite=new Activite($response['id'],$response['name'],$response['description'],$response['distance'],$response['start_date_local'],$response['elapsed_time']);
         $this->storage->createActivite($activite);
+
 
         $this->POSTredirect('.','Activité crée');
 
 
+    }
+
+    public function mesActivites(){
+        $this->storage->getMyActivites($_SESSION['user']['athlete']['id']);
     }
 
     public function callAPI($method, $url, $data = false)

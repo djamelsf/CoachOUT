@@ -37,7 +37,7 @@ class AthleteController
                         "Accueil" => '.',
                         "Trouver un groupe" =>'?a=trouverGroupe',
                         "Créer un activite" => '?o=activite&a=nouvelleActivite',
-                        "Mes activites" => '?a=mesActivites',
+                        "Mes activites" => '?o=activite&a=mesActivites',
                         "Déconnexion" => '?a=deconnexion',
                     );
                 }else{
