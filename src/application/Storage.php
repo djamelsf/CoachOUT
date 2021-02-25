@@ -10,6 +10,7 @@ interface Storage {
 	public function isCoach($id);
 	public function isSportif($id);
 	public function createAthlete(Athlete $athlete);
+	public function createActivite(Activite $activite);
 }
 
 ?>

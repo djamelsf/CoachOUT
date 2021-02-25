@@ -33,14 +33,14 @@ class Router
 
         // Regarder quel contrôleur instancier
         switch ($package) {
-            case 'poem':
+            case 'athlete':
                 $this->controllerClassName = 'Djs\Application\AthleteController';
                 break;
-            /** exemple pour plus tard
-            case 'image':
-                $this->controllerClassName = 'ImageController';
+
+            case 'activite':
+                $this->controllerClassName = 'Djs\Application\ActiviteController';
                 break;
-             */
+
 
             default:
                 // idem ici, on peut imaginer un package à utiliser par défaut

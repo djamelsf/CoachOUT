@@ -36,7 +36,7 @@ class AthleteController
                     $menu = array(
                         "Accueil" => '.',
                         "Trouver un groupe" =>'?a=trouverGroupe',
-                        "Créer un activite" => '?a=nouvelleActivite',
+                        "Créer un activite" => '?o=activite&a=nouvelleActivite',
                         "Mes activites" => '?a=mesActivites',
                         "Déconnexion" => '?a=deconnexion',
                     );

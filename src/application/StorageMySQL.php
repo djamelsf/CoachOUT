@@ -30,6 +30,27 @@ class StorageMySQL implements Storage {
         }
     }
 
+    public function createActivite(Activite $activite)
+    {
+        $rq = "INSERT INTO activite (idAc,nom,description,distance,date,elapsed_time,idU) VALUES (:id,:nom,:description,:distance,:date,:elapsed_time,:idU)";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':id' => $activite->getIdAc(),
+            ':nom' => $activite->getNom(),
+            ':description' => $activite->getDescription(),
+            ':distance' => $activite->getDistance(),
+            ':date' => $activite->getDate(),
+            ':elapsed_time' => $activite->getElapsedTime(),
+            ':idU' => $_SESSION['user']['athlete']['id'],
+        );
+        $t=$stmt->execute($data);
+        if ($t) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 
     public function isCoach($id){
         $rq = "SELECT * FROM user WHERE idU= :id AND type= 'coach'";
