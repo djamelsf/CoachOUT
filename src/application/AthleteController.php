@@ -64,12 +64,16 @@ class AthleteController
      */
     public function execute($action)
     {
-        $this->$action();
+        if(method_exists($this,$action)){
+            $this->$action();
+        }else{
+            echo "wrong function";
+        }
+
     }
 
     public function deconnexion()
     {
-        echo "helloo";
         $this->autenticationManager->deconnexion();
         $this->POSTredirect(".", "Déconnecté");
     }
@@ -106,12 +110,20 @@ class AthleteController
 
     public function defaultAction()
     {
-//        if($this->autenticationManager->isConnected()){
-//            return $this->afficher();
-//
-//        }else{
-        return $this->makeHomePage();
-//        }
+        if($this->autenticationManager->isConnected()){
+            if($this->storage->isCoach($_SESSION['user']['athlete']['id'])){
+                return $this->makeCoachHomepage();
+            }else{
+                if($this->storage->isSportif($_SESSION['user']['athlete']['id'])){
+                    return $this->makeSportifHomepage();
+                }else{
+                    $this->POSTredirect('?a=inscriptionAthlete', 'inscription requise');
+                }
+            }
+
+        }else{
+            return $this->makeHomePage();
+        }
 
     }
 
@@ -133,27 +145,24 @@ class AthleteController
 
     public function makeHomePage()
     {
-        if ($this->autenticationManager->isConnected()) {
-            if ($this->storage->existsAthlete($_SESSION['user']['athlete']['id'])) {
-                if ($this->storage->isCoach($_SESSION['user']['athlete']['id'])) {
-                    $title = "Bienvenue !";
-                    $content = "Bienvenue Coach! dans Strava!.";
-                    $this->view->setPart('title', $title);
-                    $this->view->setPart('content', $content);
-                } else {
-                    echo 'SPORTIF OK';
-                }
-            } else {
-                $this->POSTredirect('?a=inscriptionAthlete', 'inscription requise');
-            }
-        } else {
             $title = "Bienvenue !";
             $content = "Bienvenue sur STRAVA API.";
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }
+    }
 
+    public function makeCoachHomepage(){
+        $title = "Bienvenue !";
+        $content = "Bienvenue Coach! dans Strava!.";
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
+    }
 
+    public function makeSportifHomepage(){
+        $title = "Bienvenue a toi!";
+        $content = "Bienvenue Sportif! dans Strava!.";
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
     }
 
     public function inscriptionAthlete()
