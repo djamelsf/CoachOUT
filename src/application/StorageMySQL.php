@@ -51,6 +51,21 @@ class StorageMySQL implements Storage {
         }
     }
 
+    public function createGroupe(Groupe $groupe)
+    {
+        $rq = "INSERT INTO groupe (nom,description,idU) VALUES (:nom,:description,:idU)";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':nom' => $groupe->getNom(),
+            ':description' => $groupe->getDescription(),
+            ':idU' => $_SESSION['user']['athlete']['id'],
+        );
+        $t=$stmt->execute($data);
+        if ($t) {
+            return $this->connexion->lastInsertId();
+        }
+    }
+
 
     public function isCoach($id){
         $rq = "SELECT * FROM user WHERE idU= :id AND type= 'coach'";

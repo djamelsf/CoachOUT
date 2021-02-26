@@ -41,6 +41,10 @@ class Router
                 $this->controllerClassName = 'Djs\Application\ActiviteController';
                 break;
 
+            case 'groupe':
+                $this->controllerClassName = 'Djs\Application\GroupeController';
+                break;
+
 
             default:
                 // idem ici, on peut imaginer un package à utiliser par défaut

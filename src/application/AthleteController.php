@@ -27,7 +27,7 @@ class AthleteController
             if($this->storage->isCoach($_SESSION['user']['athlete']['id'])){
                 $menu = array(
                     "Accueil" => '.',
-                    "Créer un groupe" =>'?a=nouveauGroupe',
+                    "Créer un groupe" =>'?o=groupe&a=nouveauGroupe',
                     "Mes groupes" => '?a=mesGroupes',
                     "Déconnexion" => '?a=deconnexion',
                 );
