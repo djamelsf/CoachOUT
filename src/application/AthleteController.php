@@ -35,7 +35,7 @@ class AthleteController
                 if($this->storage->isSportif($_SESSION['user']['athlete']['id'])){
                     $menu = array(
                         "Accueil" => '.',
-                        "Trouver un groupe" =>'?a=trouverGroupe',
+                        "Trouver un groupe" =>'?o=groupe&a=trouverGroupe',
                         "Créer un activite" => '?o=activite&a=nouvelleActivite',
                         "Mes activites" => '?o=activite&a=mesActivites',
                         "Déconnexion" => '?a=deconnexion',

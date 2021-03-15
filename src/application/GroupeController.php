@@ -99,8 +99,16 @@ class GroupeController{
         
     }
 
+    public function trouverGroupe(){
+        $title="Chercher un groupe";
+        $content="";
+        
+    }
+
     public function defaultAction(){
     }
+
+
 
     public function POSTredirect($url, $feedback)
     {
