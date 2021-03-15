@@ -13,6 +13,7 @@ interface Storage {
 	public function createActivite(Activite $activite);
 	public function getMyActivites($id);
 	public function createGroupe(Groupe $groupe);
+	public function getMyGroupes($id);
 }
 
 ?>

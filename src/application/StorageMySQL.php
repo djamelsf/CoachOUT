@@ -131,6 +131,22 @@ class StorageMySQL implements Storage {
         return $tab;
     }
 
+    public function getMyGroupes($id)
+    {
+        $rq = "SELECT * FROM groupe WHERE idU= :idU";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idU' => $id,
+        );
+        $stmt->execute($data);
+        $tab=[];
+        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            $tab[$setup['idG']]=new Groupe($setup['nom'],$setup['description']);
+        }
+
+        return $tab;
+    }
+
 
     public function hydrate($stmt){
 		$tab=[];

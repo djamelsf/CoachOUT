@@ -26,7 +26,7 @@ class GroupeController{
                 $menu = array(
                     "Accueil" => '.',
                     "Créer un groupe" =>'?o=groupe&a=nouveauGroupe',
-                    "Mes groupes" => '?a=mesGroupes',
+                    "Mes groupes" => '?o=groupe&a=mesGroupes',
                     "Déconnexion" => '?a=deconnexion',
                 );
             }else{
@@ -79,12 +79,28 @@ class GroupeController{
     public function sauverGroupe(){
         $groupe=new Groupe($_POST['nom'],$_POST['description']);
         $p=$this->storage->createGroupe($groupe);
-        echo $p;
-        //$this->POSTredirect('.','Groupe crée');
+        $this->POSTredirect('.','Groupe crée');
 
     }
 
-    public function defaultAction(){}
+    public function mesGroupes(){
+        $res=$this->storage->getMyGroupes($_SESSION['user']['athlete']['id']);
+        $title="Mes groupes";
+        $content="<ul>";
+        foreach ($res as $key => $value){
+            $content.="<li> <a href='?o=groupe&a=show&id=$key' > ".$value->getNom()." </a></li>";
+        }
+        $content.="</ul>";
+        $this->view->setPart('title',$title);
+        $this->view->setPart('content',$content);
+    }
+
+    public function show(){
+        
+    }
+
+    public function defaultAction(){
+    }
 
     public function POSTredirect($url, $feedback)
     {
