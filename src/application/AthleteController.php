@@ -186,7 +186,7 @@ class AthleteController
     public function sauverInscription()
     {
         $a = $this->getAthlete();
-        $athlete = new Athlete($a['id'], $a['lastname'], $a['firstname'], $a['weight'], $_POST['type']);
+        $athlete = new Athlete($a['id'], $a['lastname'], $a['firstname'], $a['weight'], $_POST['type'],$a['profile_medium']);
         $this->storage->createAthlete($athlete);
         $this->POSTredirect('.', 'Inscription faite');
 

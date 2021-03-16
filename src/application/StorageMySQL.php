@@ -13,7 +13,7 @@ class StorageMySQL implements Storage {
 
     public function createAthlete(Athlete $athlete)
     {
-        $rq = "INSERT INTO user (idU,nom,prenom,weight,type) VALUES (:id,:nom,:prenom,:weight,:type)";
+        $rq = "INSERT INTO user (idU,nom,prenom,weight,type,imageUrl) VALUES (:id,:nom,:prenom,:weight,:type,:imageUrl)";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':id' => $athlete->getIdU(),
@@ -21,6 +21,7 @@ class StorageMySQL implements Storage {
             ':prenom' => $athlete->getPrenom(),
             ':weight' => $athlete->getWeight().'',
             ':type' => $athlete->getType(),
+            ':imageUrl' => $athlete->getImageUrl(),
         );
         $t=$stmt->execute($data);
         if ($t) {
@@ -157,7 +158,7 @@ class StorageMySQL implements Storage {
         $stmt->execute($data);
         $user=null;
         if ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $user=new Athlete($id,$setup['nom'],$setup['prenom'],$setup['weight'],$setup['type']);
+            $user=new Athlete($id,$setup['nom'],$setup['prenom'],$setup['weight'],$setup['type'],$setup['imageUrl']);
         }
         return $user;
     }

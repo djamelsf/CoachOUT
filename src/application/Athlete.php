@@ -8,13 +8,15 @@ class Athlete {
 	protected $prenom;
 	protected $weight;
 	protected $type;
+	protected $imageUrl;
 
-	public function __construct($idU, $nom, $prenom, $weight,$type) {
+	public function __construct($idU, $nom, $prenom, $weight,$type,$imageUrl) {
 		$this->idU=$idU;
 		$this->nom=$nom;
 		$this->prenom=$prenom;
 		$this->weight=$weight;
 		$this->type=$type;
+		$this->imageUrl=$imageUrl;
 	}
 
 	/**
@@ -96,6 +98,24 @@ class Athlete {
 	{
 		$this->type = $type;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getImageUrl()
+	{
+		return $this->imageUrl;
+	}
+
+	/**
+	 * @param mixed $imageUrl
+	 */
+	public function setImageUrl($imageUrl)
+	{
+		$this->imageUrl = $imageUrl;
+	}
+
+
 
 
 
