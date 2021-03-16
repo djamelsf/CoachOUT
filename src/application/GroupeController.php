@@ -110,7 +110,34 @@ class GroupeController{
                 $content .= "<a href='?o=groupe&a=adherer&id=$id'>Adherer</a>";
             }
         }else{
-            $this->storage->getActivitesByGroupe($this->request->getGetParam('id'));
+            $res=$this->storage->getActivitesByGroupe($this->request->getGetParam('id'));
+            $id = $this->request->getGetParam('id');
+            $groupe = $this->storage->getGroupe($id);
+
+            $title="Activités du groupe: ".$groupe->getNom();
+            $content="<ul>";
+            foreach($res as $key => $value){
+                $time=($value->getElapsedTime())/60;
+                $allure=($time/($value->getDistance()/1000))*60;
+
+
+
+                ///
+                $athlete=$this->storage->getUser($value->getIdU());
+                $content.="<li>";
+                $content.="<a href='?o=activite&a=show&id=".$value->getIdAc()."'>";
+                $content.="<p>".$value->getNom()."</p> </a>";
+                $content.="<p>Description :".$value->getDescription()."</p>";
+                $content.="<p>Distance :".($value->getDistance()/1000)." Km</p>";
+                $content.="<p>Durée :".date('H:i:s', $value->getElapsedTime())."</p>";
+                $content.="<p>Allure :".date('i:s',$allure)."/Km</p>";
+                $content.="<a href='?o=athlete&a=show&id=".$athlete->getIdU()."'><p>Athlete :".$athlete->getPrenom()."</p> </a>";
+                $content.="<p>Posté le ".$value->getTime()."</p>";
+                $content.="";
+                $content.="</li>";
+            }
+            $content.="</ul>";
+
 
         }
         $this->view->setPart('title',$title);

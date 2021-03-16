@@ -192,7 +192,6 @@ class StorageMySQL implements Storage {
         while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
             array_push($tab, new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time'],$setup['idU'],$setup['time']));
         }
-        print_r($tab);
         return $tab;
     }
 
