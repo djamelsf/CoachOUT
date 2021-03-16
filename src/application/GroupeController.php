@@ -77,7 +77,7 @@ class GroupeController{
     }
 
     public function sauverGroupe(){
-        $groupe=new Groupe($_POST['nom'],$_POST['description']);
+        $groupe=new Groupe($_POST['nom'],$_POST['description'],$_SESSION['user']['athlete']['id']);
         $p=$this->storage->createGroupe($groupe);
         $this->POSTredirect('.','Groupe crée');
 
@@ -99,8 +99,8 @@ class GroupeController{
         if($this->storage->isSportif($_SESSION['user']['athlete']['id'])){
             $id = $this->request->getGetParam('id');
             $groupe = $this->storage->getGroupe($id);
-            $iDcoach = $this->storage->getCoachGroupe($id);
-            $coach = $this->storage->getUser($iDcoach);
+            //$iDcoach = $this->storage->getCoachGroupe($id);
+            $coach = $this->storage->getUser($groupe->getIdU());
             $title = "Groupe de " . $coach->getNom();
             $content = "<p> Groupe " . $groupe->getNom() . " </p>";
             $content .= "<p> Description :" . $groupe->getDescription() . " </p>";

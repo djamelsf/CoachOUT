@@ -32,7 +32,7 @@ class StorageMySQL implements Storage {
 
     public function createActivite(Activite $activite)
     {
-        $rq = "INSERT INTO activite (idAc,nom,description,distance,date,elapsed_time,idU) VALUES (:idAc,:nom,:description,:distance,:date,:elapsed_time,:idU)";
+        $rq = "INSERT INTO activite (idAc,nom,description,distance,date,elapsed_time,idU,time) VALUES (:idAc,:nom,:description,:distance,:date,:elapsed_time,:idU,:time)";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':idAc' => $activite->getIdAc(),
@@ -41,7 +41,9 @@ class StorageMySQL implements Storage {
             ':distance' => $activite->getDistance(),
             ':date' => $activite->getDate(),
             ':elapsed_time' => $activite->getElapsedTime(),
-            ':idU' => $_SESSION['user']['athlete']['id'],
+            ':idU' => $activite->getIdU(),
+            ':time' => $activite->getTime(),
+
         );
         $t=$stmt->execute($data);
         if ($t) {
@@ -170,7 +172,7 @@ class StorageMySQL implements Storage {
         $stmt->execute($data);
         $tab=[];
         while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            array_push($tab, new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time']));
+            array_push($tab, new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time'],$setup['idU'],$setup['time']));
         }
 
         print_r($tab);
@@ -187,7 +189,7 @@ class StorageMySQL implements Storage {
         $stmt->execute($data);
         $tab=[];
         while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            array_push($tab, new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time']));
+            array_push($tab, new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time'],$setup['idU'],$setup['time']));
         }
         print_r($tab);
         return $tab;
@@ -204,7 +206,7 @@ class StorageMySQL implements Storage {
         $stmt->execute($data);
         $tab=[];
         while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $tab[$setup['idG']]=new Groupe($setup['nom'],$setup['description']);
+            $tab[$setup['idG']]=new Groupe($setup['nom'],$setup['description'],$setup['idU']);
         }
 
         return $tab;
@@ -220,7 +222,7 @@ class StorageMySQL implements Storage {
         $stmt->execute($data);
         $groupe=null;
         if ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $groupe=new Groupe($setup['nom'],$setup['description']);
+            $groupe=new Groupe($setup['nom'],$setup['description'],$setup['idU']);
         }
         return $groupe;
     }
@@ -250,7 +252,7 @@ class StorageMySQL implements Storage {
         $stmt->execute($data);
         $tab=[];
         while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $tab[$setup['idG']]=new Groupe($setup['nom'],$setup['description']);
+            $tab[$setup['idG']]=new Groupe($setup['nom'],$setup['description'],$setup['idU']);
         }
 
         return $tab;

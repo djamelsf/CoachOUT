@@ -5,11 +5,13 @@ namespace Djs\Application;
 class Groupe{
     protected $nom;
     protected $description;
+    protected $idu;
 
-    public function __construct($nom,$description)
+    public function __construct($nom,$description,$idu)
     {
         $this->nom=$nom;
         $this->description=$description;
+        $this->idu=$idu;
     }
 
     /**
@@ -43,6 +45,24 @@ class Groupe{
     {
         $this->description = $description;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getIdu()
+    {
+        return $this->idu;
+    }
+
+    /**
+     * @param mixed $idu
+     */
+    public function setIdu($idu)
+    {
+        $this->idu = $idu;
+    }
+
+
 
 
 }

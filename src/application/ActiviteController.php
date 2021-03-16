@@ -113,7 +113,7 @@ class ActiviteController{
         $response = json_decode($make_call, true);
 
 
-        $activite=new Activite($response['id'],$response['name'],$response['description'],$response['distance'],$response['start_date_local'],$response['elapsed_time']);
+        $activite=new Activite($response['id'],$response['name'],$response['description'],$response['distance'],$response['start_date_local'],$response['elapsed_time'],$_SESSION['user']['athlete']['id'],date('Y-m-d H:i:s'));
         $this->storage->createActivite($activite);
 
 

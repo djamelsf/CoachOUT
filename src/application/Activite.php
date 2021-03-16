@@ -9,6 +9,8 @@ class Activite{
     protected $distance;
     protected $date;
     protected $elapsed_time;
+    protected $idU;
+    protected $time;
 
     /**
      * Activite constructor.
@@ -18,7 +20,7 @@ class Activite{
      * @param $distance
      * @param $date
      */
-    public function __construct($idAc, $nom, $description, $distance, $date,$elapsed_time)
+    public function __construct($idAc, $nom, $description, $distance, $date,$elapsed_time,$idU,$time)
     {
         $this->idAc = $idAc;
         $this->nom = $nom;
@@ -26,6 +28,8 @@ class Activite{
         $this->distance = $distance;
         $this->date = $date;
         $this->elapsed_time=$elapsed_time;
+        $this->idU=$idU;
+        $this->time=$time;
     }
 
     /**
@@ -123,6 +127,41 @@ class Activite{
     {
         $this->elapsed_time = $elapsed_time;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getIdU()
+    {
+        return $this->idU;
+    }
+
+    /**
+     * @param mixed $idU
+     */
+    public function setIdU($idU)
+    {
+        $this->idU = $idU;
+    }
+
+    /**
+     * @return false|string
+     */
+    public function getTime()
+    {
+        return $this->time;
+    }
+
+    /**
+     * @param false|string $time
+     */
+    public function setTime($time)
+    {
+        $this->time = $time;
+    }
+
+
+
 
 
 
