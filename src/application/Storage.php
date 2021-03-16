@@ -1,6 +1,6 @@
 <?php
 namespace Djs\Application;
-/* Interface représentant un système de stockage des poèmes. */
+
 interface Storage {
 	/* Renvoie l'instance de Athlete correspondant à l'identifiant donné,
 	 * ou null s'il n'y en a pas. */
@@ -14,6 +14,13 @@ interface Storage {
 	public function getMyActivites($id);
 	public function createGroupe(Groupe $groupe);
 	public function getMyGroupes($id);
+	public function getGroupe($id);
+	public function getCoachGroupe($id);
+	public function rechercheGroupe($text);
+	public function getUser($id);
+	public function adherer($idG);
+	public function isInGroupe($id);
+	public function getActivitesByGroupe($id);
 }
 
 ?>

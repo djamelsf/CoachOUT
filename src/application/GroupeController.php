@@ -96,14 +96,60 @@ class GroupeController{
     }
 
     public function show(){
+        if($this->storage->isSportif($_SESSION['user']['athlete']['id'])){
+            $id = $this->request->getGetParam('id');
+            $groupe = $this->storage->getGroupe($id);
+            $iDcoach = $this->storage->getCoachGroupe($id);
+            $coach = $this->storage->getUser($iDcoach);
+            $title = "Groupe de " . $coach->getNom();
+            $content = "<p> Groupe " . $groupe->getNom() . " </p>";
+            $content .= "<p> Description :" . $groupe->getDescription() . " </p>";
+            if ($this->storage->isInGroupe($id)) {
+                $content .= "<a href='?o=groupe&a=retirer&id=$id'>Se retirer</a>";
+            } else {
+                $content .= "<a href='?o=groupe&a=adherer&id=$id'>Adherer</a>";
+            }
+        }else{
+            $this->storage->getActivitesByGroupe($this->request->getGetParam('id'));
+
+        }
+        $this->view->setPart('title',$title);
+        $this->view->setPart('content',$content);
         
+    }
+
+    public function adherer(){
+        $this->storage->adherer($this->request->getGetParam('id'));
+        $this->POSTredirect('.','vous venez de rejoindre un nouveau groupe');
     }
 
     public function trouverGroupe(){
         $title="Chercher un groupe";
-        $content="";
-        
+        $content="<form method='get'>";
+        $content.="<input type='hidden' name='o' value='groupe'>";
+        $content.="<input type='hidden' name='a' value='recherche'>";
+        $content.="<input type='text' name='mot'>";
+        $content.="<input type='submit'>";
+        $content.="</form>";
+
+        $this->view->setPart('title',$title);
+        $this->view->setPart('content',$content);
     }
+
+    public function recherche(){
+        $title="Résulat de la recherche";
+        $res=$this->storage->rechercheGroupe($this->request->getGetParam('mot'));
+        $content="<ul>";
+        foreach ($res as $key => $value){
+            $content.="<li> <a href='?o=groupe&a=show&id=$key' > ".$value->getNom()." </a></li>";
+        }
+        $content.="</ul>";
+        $this->view->setPart('title',$title);
+        $this->view->setPart('content',$content);
+
+    }
+
+
 
     public function defaultAction(){
     }
