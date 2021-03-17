@@ -3,6 +3,7 @@
 namespace Djs\Framework;
 use Djs\Application\AutenticationManager;
 use Djs\Application\AthleteController;
+use Djs\Application\Outils;
 
 class FrontController
 {
@@ -14,6 +15,7 @@ class FrontController
     protected $post;
     protected $autenticationManager;
     protected $storage;
+    protected $outils;
 
 
     /**
@@ -26,6 +28,7 @@ class FrontController
         $this->post=$_POST;
         $this->autenticationManager=new AutenticationManager();
         $this->storage=$storage;
+        $this->outils=new Outils($this->autenticationManager,$this->storage);
     }
 
     /**
@@ -41,7 +44,7 @@ class FrontController
         $action = $router->getControllerAction();
 
         // instancier le controleur de classe et exécuter l'action
-        $controller = new $className($this->request, $this->response, $view,$this->autenticationManager,$this->storage);
+        $controller = new $className($this->request, $this->response, $view,$this->autenticationManager,$this->storage,$this->outils);
         $controller->execute($action);
         
         if ($this->request->isAjaxRequest()) {

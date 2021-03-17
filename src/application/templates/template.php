@@ -3,7 +3,7 @@
 <head>
 	<title><?php echo $le_titre ?></title>
 	<meta charset="UTF-8" />
-	<link rel="stylesheet" href="skin/poems.css" />
+<!--	<link rel="stylesheet" href="skin/poems.css" />-->
 </head>
 <body>
 	<nav class="menu">

@@ -12,6 +12,7 @@ class ActiviteController{
     protected $view;
     protected $autenticationManager;
     protected $storage;
+    protected $outils;
 
     /**
      * ActiviteController constructor.
@@ -21,46 +22,17 @@ class ActiviteController{
      * @param $autenticationManager
      * @param $storage
      */
-    public function __construct(Request $request, Response $response, View $view, AutenticationManager $autenticationManager, Storage $storage)
+    public function __construct(Request $request, Response $response, View $view, AutenticationManager $autenticationManager, Storage $storage, Outils $outils)
     {
         $this->request = $request;
         $this->response = $response;
         $this->view = $view;
         $this->autenticationManager = $autenticationManager;
         $this->storage = $storage;
+        $this->outils=$outils;
 
-        if ($this->autenticationManager->isConnected()) {
-            if($this->storage->isCoach($_SESSION['user']['athlete']['id'])){
-                $menu = array(
-                    "Accueil" => '.',
-                    "Créer un groupe" =>'?o=groupe&a=nouveauGroupe',
-                    "Mes groupes" => '?a=mesGroupes',
-                    "Déconnexion" => '?a=deconnexion',
-                );
-            }else{
-                if($this->storage->isSportif($_SESSION['user']['athlete']['id'])){
-                    $menu = array(
-                        "Accueil" => '.',
-                        "Trouver un groupe" =>'?a=trouverGroupe',
-                        "Créer un activite" => '?o=activite&a=nouvelleActivite',
-                        "Mes activites" => '?o=activite&a=mesActivites',
-                        "Déconnexion" => '?a=deconnexion',
-                    );
-                }else{
-                    $menu = array(
-                        "Accueil" => '.',
-                        "Déconnexion" => '?a=deconnexion',
-                    );
-                }
-            }
-        } else {
-            $menu = array(
-                "Accueil" => '.',
-                "Connexion" => 'http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write"',
-            );
-        }
 
-        $this->view->setPart('menu', $menu);
+        $this->view->setPart('menu', $this->outils->getMenu());
     }
 
     public function execute($action)
@@ -108,7 +80,7 @@ class ActiviteController{
             "distance" => $_POST['distance'],
         );
 
-        $make_call = $this->callAPI('POST', 'https://www.strava.com/api/v3/activities', json_encode($data_array));
+        $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/api/v3/activities', json_encode($data_array));
 
         $response = json_decode($make_call, true);
 
@@ -117,54 +89,13 @@ class ActiviteController{
         $this->storage->createActivite($activite);
 
 
-        $this->POSTredirect('.','Activité crée');
+        $this->outils->POSTredirect('.','Activité crée');
 
 
     }
 
     public function mesActivites(){
         $this->storage->getMyActivites($_SESSION['user']['athlete']['id']);
-    }
-
-    public function callAPI($method, $url, $data = false)
-    {
-        $curl = curl_init();
-        switch ($method) {
-            case "POST":
-                curl_setopt($curl, CURLOPT_POST, 1);
-                if ($data)
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                break;
-            case "PUT":
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-                if ($data)
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                break;
-            default:
-                if ($data)
-                    $url = sprintf("%s?%s", $url, http_build_query($data));
-        }
-        // OPTIONS:
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-        ));
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        // EXECUTE:
-        $result = curl_exec($curl);
-        if (!$result) {
-            die("Connection Failure");
-        }
-        curl_close($curl);
-        return $result;
-    }
-
-    public function POSTredirect($url, $feedback)
-    {
-        $_SESSION['feedback'] = $feedback;
-        header("Location: " . htmlspecialchars_decode($url), true, 303);
-        die;
     }
 
 
