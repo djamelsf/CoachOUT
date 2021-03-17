@@ -260,6 +260,23 @@ class StorageMySQL implements Storage {
 
     }
 
+    public function getActivitesOdered($id)
+    {
+        $rq="SELECT * FROM activite WHERE idU= :idU ORDER by activite.date ASC";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idU' => $id,
+        );
+        $stmt->execute($data);
+        $labels=[];
+        $data=[];
+        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            array_push($labels,$setup['date']);
+            array_push($data,($setup['distance'])/1000);
+        }
+        return [$labels,$data];
+    }
+
 
     public function hydrate($stmt){
 		$tab=[];

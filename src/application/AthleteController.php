@@ -192,6 +192,36 @@ class AthleteController
 
     }
 
+    public function show(){
+        $id=$this->request->getGetParam('id');
+        $athlete=$this->storage->getUser($id);
+        $tab=$this->storage->getActivitesOdered($id);
+        $labels=$tab[0];
+        $data=$tab[1];
+        $title="Page de ".$athlete->getPrenom();
+        $content="<img src='".$athlete->getImageUrl()."'>";
+        $content.="<script src='https://cdn.jsdelivr.net/npm/chart.js@2.8.0'></script>";
+        $content.="<div style='width: 50%'> <canvas id='myChart'></canvas> </div>";
+        $content.="<script type='text/javascript'>";
+        $content.="var ctx = document.getElementById('myChart').getContext('2d');";
+        $content.="var chart = new Chart(ctx, {
+        type: 'line',";
+        $content.="data: {
+        labels: ".json_encode($labels).",
+        datasets: [{ 
+            data: ".json_encode($data).",
+            label: 'Distance Km',
+            borderColor: '#3e95cd',
+            fill: false
+        }
+        ]},
+        options: {}
+        });";
+        $content.="</script>";
+        $this->view->setPart('title',$title);
+        $this->view->setPart('content',$content);
+    }
+
     public function callAPI($method, $url, $data = false)
     {
         $curl = curl_init();

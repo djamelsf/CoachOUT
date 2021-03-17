@@ -21,6 +21,7 @@ interface Storage {
 	public function adherer($idG);
 	public function isInGroupe($id);
 	public function getActivitesByGroupe($id);
+	public function getActivitesOdered($id);
 }
 
 ?>
