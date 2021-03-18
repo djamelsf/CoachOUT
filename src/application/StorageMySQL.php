@@ -277,6 +277,35 @@ class StorageMySQL implements Storage {
         return [$labels,$data];
     }
 
+    public function getGroupeMembres($id)
+    {
+        $rq="SELECT * FROM adhere WHERE idG= :idG";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idG' => $id,
+        );
+        $stmt->execute($data);
+        $res=[];
+        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            array_push($res,$setup['idU']);
+        }
+        return $res;
+    }
+
+    public function supprimerGroupe($id)
+    {
+        $rq = "DELETE FROM adhere WHERE idG= :id; DELETE FROM groupe WHERE idG= :id;";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':id' => $id,
+        );
+        if ($stmt->execute($data)) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 
     public function hydrate($stmt){
 		$tab=[];
