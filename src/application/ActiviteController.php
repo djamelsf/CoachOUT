@@ -49,27 +49,33 @@ class ActiviteController{
 
     public function nouvelleActivite(){
         $content = '';
-        $content .= '<form method="post" action="?o=activite&a=sauverActivite">';
-        $content .= 'Nom <input name="nom" type="text" required>';
-        $content .= 'Description <input name="description" type="text">';
-        $content .= 'Distance <input name="distance" type="number" step="any" required>';
-        $content .= 'Date début de lactivité <input name="date" type="date" required>';
-        $content .= 'Heure début de lactivité <input name="heureD" type="time" required>';
-        $content .= 'Heure fin de lactivité <input name="heureF" type="time" required>';
-        $content .= '<input type="submit">';
-        $content .= '</form>';
+        $content.='<div class="container"> <h2 class="text-center">Nouvelle activité</h2> <form method="post" action="?o=activite&a=sauverActivite">';
+        $content.='<div class="form-group"><label>Nom*</label>';
+        $content.='<input type="text" class="form-control" placeholder="Titre de l\'activité" name="nom" required></div>';
+        $content.='<div class="form-group"> <label>Description*</label>';
+        $content.='<textarea class="form-control" rows="3" name="description" required></textarea></div>';
+        $content.='<div class="form-group"><label>Distance*</label>';
+        $content.='<input type="number" step="any" class="form-control" placeholder="Distance en kilomètre" name="distance" required></div>';
+        $content.='<div class="form-row">';
+        $content.='<div class="form-group col-md-6"><label>Date début de lactivité*</label>';
+        $content.='<input type="date" class="form-control" name="date" required></div>';
+        $content.='<div class="form-group col-md-6"><label>Heure début de lactivité*</label>';
+        $content.='<input type="time" class="form-control" name="heureD" required></div>';
+        $content.='</div>';
+
+
+        $content.='<div class="form-group">';
+        $content.='<label>Durée*</label>';
+        $content.='<input type="time" step="1" class="form-control" name="duree" required>';
+        $content.='</div>';
+        $content.='<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Ajouter</button> </form></div>';
 
         $this->view->setPart('title', 'Nouvelle activité');
         $this->view->setPart('content', $content);
     }
 
     public function sauverActivite(){
-        $heureD=$_POST['heureD'];
-        $heureF=$_POST['heureF'];
-        $debut = strtotime($_POST['date']." $heureD UTC");
-        $fin=strtotime($_POST['date']." $heureF UTC");
-        $elapsed_time=$fin-$debut;
-
+        $elapsed_time=strtotime($_POST['duree']) - strtotime('TODAY');
         $data_array = array(
             "access_token" => $_SESSION['user']['access_token'],
             "name" => $_POST['nom'],
@@ -77,15 +83,14 @@ class ActiviteController{
             "start_date_local" => $_POST['date']."T".$_POST['heureD'],
             "elapsed_time" => $elapsed_time,
             "description" => $_POST['description'],
-            "distance" => $_POST['distance'],
+            "distance" => $_POST['distance']*1000,
         );
 
         $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/api/v3/activities', json_encode($data_array));
 
         $response = json_decode($make_call, true);
 
-
-        $activite=new Activite($response['id'],$response['name'],$response['description'],$response['distance'],$response['start_date_local'],$response['elapsed_time'],$_SESSION['user']['athlete']['id'],date('Y-m-d H:i:s'));
+        $activite=new Activite($response['id'],$response['name'],$response['description'],$response['distance']/1000,$response['start_date_local'],$response['elapsed_time'],$_SESSION['user']['athlete']['id'],date('Y-m-d H:i:s'));
         $this->storage->createActivite($activite);
 
 
