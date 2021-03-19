@@ -305,6 +305,20 @@ class StorageMySQL implements Storage {
         }
     }
 
+    public function supprimerActivite($id)
+    {
+        $rq = "DELETE FROM activite WHERE idAc= :id";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':id' => $id,
+        );
+        if ($stmt->execute($data)) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 
     public function hydrate($stmt){
 		$tab=[];

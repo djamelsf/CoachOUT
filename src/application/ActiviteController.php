@@ -100,7 +100,45 @@ class ActiviteController{
     }
 
     public function mesActivites(){
-        $this->storage->getMyActivites($_SESSION['user']['athlete']['id']);
+        $res=$this->storage->getMyActivites($_SESSION['user']['athlete']['id']);
+        $title = "Mes activités";
+        $content = '<div class="container"> <h2 class="text-center">Mes activités</h2> <div class="col">';
+        foreach ($res as $key => $value) {
+            $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
+            $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
+            $content .= '<small class="card-text">Description : ' . $value->getDescription() . '</small><br>';
+            $content .= '<small class="card-text">Distance : ' . $value->getDistance() . ' Km</small><br>';
+            $content .= '<small class="card-text">Date : ' . $value->getDate() . '</small><br>';
+            $content .= '<a href="#" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+            $content .= '<a href="?o=activite&a=supprimer&id=' . $value->getIdAC(). '" class="btn btn-danger">Supprimer</a>';
+            $content .= '<small class="float-right">5 commentaire(s)</small>';
+            $content .= ' </div></div> </div> <br>';
+        }
+        $content .= '</div></div>';
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
+    }
+
+    public function supprimer()
+    {
+        $title = 'Suppresion';
+        $id = $this->request->getGetParam('id');
+        $content = '<form class="container" method="post" action="?o=activite&a=confirSuppr&id=' . $id . '"> <h5>Voulez vous supprimer cette activité ?</h5>';
+        $content .= "Oui<input type='radio' name='ouiNon' value='oui' required>";
+        $content .= "<br>Non<input type='radio' name='ouiNon' value='non'>";
+        $content .= '<div class="form-group row"><div class="col-sm-10">';
+        $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color:#fc5200; ">Confirmer</button>';
+        $content .= '</div></div></form>';
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
+    }
+
+    public function confirSuppr()
+    {
+        if ($_POST['ouiNon'] == 'oui') {
+            $this->storage->supprimerActivite($this->request->getGetParam('id'));
+            $this->outils->POSTredirect('.', 'Activité supprimée');
+        }
     }
 
 
