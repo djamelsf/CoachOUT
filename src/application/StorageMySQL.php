@@ -176,7 +176,6 @@ class StorageMySQL implements Storage {
             array_push($tab, new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time'],$setup['idU'],$setup['time']));
         }
 
-        print_r($tab);
         return $tab;
     }
 

@@ -172,9 +172,68 @@ class AthleteController
         $labels=$tab[0];
         $data=$tab[1];
         $title="Page de ".$athlete->getPrenom();
-        $content="<img src='".$athlete->getImageUrl()."'>";
+        $content='<div class="container"><div class="row"> <div class="col-sm-12">';
+        $content.='<img src="'.$athlete->getImageUrl().'" width="200" height="200" class="float-left">';
+        $content.='<div class="card-body float-left">';
+        $content.='<h5 class="card-title">'.$athlete->getPrenom().'</h5>';
+        $content.='</div> </div> <div class="col-sm-12"><br>';
+        $content.='<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Distance par jour</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Activités</a>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+
+  <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab"> <canvas id="myChart"></canvas> </div>
+  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+';
+
+
+
+
+        //listes des activites
+
+
+        $activites=$this->storage->getMyActivites($id);
+
+        foreach ($activites as $key => $value){
+            $content.='<div class="card"> <div class="card-body">';
+            $content.='<h5 class="card-title">'.$value->getNom().'</h5>';
+            $content.='<p class="card-text">Description : course le matin avant daller au boulot, cetait pas mal</p>';
+            $content.='<p class="card-text">Distance : 10,5 Km</p>';
+            $content.='<p class="card-text">Durée :02:00:00</p>';
+            $content.='<p class="card-text">Allure :09:05/Km</p>';
+            $content.='<p>2021-03-16 16:06:42</p>';
+
+            $content.='<a href="#" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+            $content.='<small class="float-right">5 commentaire(s)</small>';
+            $content.='</div> </div>';
+
+        }
+
+
+
+
+
+
+        ///
+
+
+
+
+        $content.=' </div> </div>';
+
+
+
+
+
+
+
+
         $content.="<script src='https://cdn.jsdelivr.net/npm/chart.js@2.8.0'></script>";
-        $content.="<div style='width: 50%'> <canvas id='myChart'></canvas> </div>";
         $content.="<script type='text/javascript'>";
         $content.="var ctx = document.getElementById('myChart').getContext('2d');";
         $content.="var chart = new Chart(ctx, {
@@ -191,6 +250,7 @@ class AthleteController
         options: {}
         });";
         $content.="</script>";
+        $content.='</div></div></div>';
         $this->view->setPart('title',$title);
         $this->view->setPart('content',$content);
     }
