@@ -11,11 +11,13 @@ class View
      * @var string $template le nom du fichier servant de squelette HTML à la page
      */
     protected $template;
+    protected $feedback;
 
-    public function __construct($template, $parts = array())
+    public function __construct($template,$feedback, $parts = array())
     {
     	$this->template = $template;
         $this->parts = $parts;
+        $this->feedback=$feedback;
     }
 
     public function setPart($key, $content)
@@ -41,6 +43,7 @@ class View
         $le_titre = $this->getPart('title');
         $le_contenu = $this->getPart('content');
         $le_menu = $this->getPart('menu');
+        $feedback=$this->feedback;
 
         ob_start();
         include($this->template);

@@ -8,6 +8,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <style>
+        .feedback {
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            background: #a80b24;
+            border-radius: 1em;
+            margin: 1em auto;
+            max-width: 90%;
+            padding: .5em;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -22,6 +34,7 @@
 	}
 ?>
 		</ul>
+
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Chercher un groupe" aria-label="Search" name="mot">
             <input type='hidden' name='o' value='groupe'>
@@ -31,7 +44,9 @@
     </div>
 	</nav>
 	<main>
-
+        <?php if ($feedback!=''){
+            echo "<p class='feedback'> ".$feedback." </p>";
+        }?>
 		<?php echo $le_contenu; ?>
 	</main>
 </body>
