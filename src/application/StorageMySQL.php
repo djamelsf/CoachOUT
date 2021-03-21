@@ -319,6 +319,37 @@ class StorageMySQL implements Storage {
         }
     }
 
+    public function quitterGroupe($id)
+    {
+        $rq = "DELETE FROM adhere WHERE idG= :idG AND idU= :idU";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idG' => $id,
+            ':idU' => $_SESSION['user']['athlete']['id'],
+        );
+        if ($stmt->execute($data)) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function classementGroupe($id)
+    {
+        $rq='SELECT * FROM (SELECT SUM(activite.distance) AS activiteSUM, adhere.idU FROM activite,adhere,groupe WHERE activite.idU=adhere.idU AND groupe.idG=adhere.idG AND groupe.idG= :id GROUP BY(adhere.idU)) AS TP ORDER BY(TP.activiteSUM) DESC LIMIT 3';
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':id' => $id,
+        );
+        $stmt->execute($data);
+        $tab=[];
+        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            $tab[$setup['idU']]=$setup['activiteSUM'];
+        }
+
+        return $tab;
+    }
+
 
     public function hydrate($stmt){
 		$tab=[];

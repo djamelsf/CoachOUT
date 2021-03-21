@@ -102,24 +102,159 @@ class GroupeController
         }
     }
 
+    public function quitter(){
+        $title = 'Quitter groupe';
+        $idG = $this->request->getGetParam('id');
+        $content = '<form class="container" method="post" action="?o=groupe&a=confirQuitter&id=' . $idG . '"> <h5>Voulez vous quitter ce groupe ?</h5>';
+        $content .= "Oui<input type='radio' name='ouiNon' value='oui' required>";
+        $content .= "<br>Non<input type='radio' name='ouiNon' value='non'>";
+        $content .= '<div class="form-group row"><div class="col-sm-10">';
+        $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color:#fc5200; ">Confirmer</button>';
+        $content .= '</div></div></form>';
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
+    }
+
+    public function confirQuitter(){
+        if ($_POST['ouiNon'] == 'oui') {
+            $this->storage->quitterGroupe($this->request->getGetParam('id'));
+            $this->outils->POSTredirect('.', 'Vous avez quitté un groupe');
+        }
+    }
+
     public function show()
     {
+        $id = $this->request->getGetParam('id');
         if ($this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
-            $id = $this->request->getGetParam('id');
-            $groupe = $this->storage->getGroupe($id);
-            //$iDcoach = $this->storage->getCoachGroupe($id);
-            $coach = $this->storage->getUser($groupe->getIdU());
-            $title = "Groupe de " . $coach->getNom();
-            $content = "<p> Groupe " . $groupe->getNom() . " </p>";
-            $content .= "<p> Description :" . $groupe->getDescription() . " </p>";
             if ($this->storage->isInGroupe($id)) {
-                $content .= "<a href='?o=groupe&a=retirer&id=$id'>Se retirer</a>";
+                $this->showGroupe();
             } else {
-                $content .= "<a href='?o=groupe&a=adherer&id=$id'>Adherer</a>";
+                $this->showUnknownGroupe();
             }
+
         } else {
             $this->showMyGroupe();
         }
+
+    }
+
+    public function showGroupe()
+    {
+
+        $id = $this->request->getGetParam('id');
+        $groupe = $this->storage->getGroupe($id);
+        $coach = $this->storage->getUser($groupe->getIdU());
+        $title = "Groupe de " . $coach->getNom();
+        $content = '<div class="row">';
+
+        $content .= '<div class="col-sm-8">';
+        $content .= '<h2 class="text-center">Groupe : ' . $groupe->getNom() . '</h2>';
+        $content .= '<div class="col">';
+        $content .= '<div class="card-body">';
+        $content .= '<p>Description du groupe : ' . $groupe->getDescription() . '</p>';
+
+        $content .= '<a href="?o=groupe&a=quitter&id=' . $id . '" class="btn btn-link" style="color: #fc5200;">Quitter le groupe</a>';
+
+
+        $content .= '</div> </div>';
+
+
+        //activites !
+
+        $content .= '<div class="col">';
+        $activites = $this->storage->getActivitesByGroupe($id);
+        foreach ($activites as $key => $value) {
+            $athlete = $this->storage->getUser($value->getIdu());
+            $content .= '<div class="card">';
+            $content .= '<div class="card-body">';
+            $content .= ' <a href="" class="float-right text-dark" style="text-decoration: none;">' . $athlete->getPrenom()
+                . ' <img src="' . $athlete->getImageUrl() . '" class="rounded" width="50" height="50"></a>';
+            $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
+            $content .= '<p class="card-text">' . $value->getDescription() . '</p>';
+            $content .= '<a href="#" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+            $content .= '<small class="float-right">5 commentaire(s)</small>';
+
+            $content .= '</div> </div>';
+            $content .= '<br>';
+
+        }
+
+
+        $content .= '</div>';
+        //////////
+        $content .= '</div>';
+
+
+        $content .= '<div class="col-sm-4">';
+        $content .= '<p class="text-center">Membres</p>';
+        $content .= '<div class="card">';
+        $content .= '<ul class="list-group list-group-flush">';
+        $content .= '<li class="list-group-item" style="background-color: gold;"> <img src="' . $coach->getImageUrl() . '" class="rounded" width="30" height="30"> ' . $coach->getNom() . ' <small style="color: #fc5200;">Coach</small> </li>';
+        $ids = $this->storage->getGroupeMembres($id);
+        foreach ($ids as $key => $value) {
+            $user = $this->storage->getUser($value);
+            $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
+
+        }
+
+
+        $content .= '</ul>';
+        $content .= '</div>';
+        $content .= '</div>';
+
+
+        $content .= '</div>';
+
+
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
+
+
+    }
+
+    public function showUnknownGroupe()
+    {
+        $id = $this->request->getGetParam('id');
+        $groupe = $this->storage->getGroupe($id);
+        $coach = $this->storage->getUser($groupe->getIdU());
+        $title = "Groupe de " . $coach->getNom();
+        $content = '<div class="row">';
+
+        $content .= '<div class="col-sm-8">';
+        $content .= '<h2 class="text-center">Groupe : ' . $groupe->getNom() . '</h2>';
+        $content .= '<div class="col">';
+        $content .= '<div class="card-body">';
+        $content .= '<p>Description du groupe : ' . $groupe->getDescription() . '</p>';
+
+        $content .= '<a href="?o=groupe&a=rejoindre&id='.$id.'" class="btn btn-link" style="color: #fc5200;">Rejoindre le groupe</a>';
+
+
+        $content .= '</div> </div> </div>';
+
+
+        $content .= '<div class="col-sm-4">';
+        $content .= '<p class="text-center">Membres</p>';
+        $content .= '<div class="card">';
+        $content .= '<ul class="list-group list-group-flush">';
+        $content .= '<li class="list-group-item" style="background-color: gold;"> <img src="' . $coach->getImageUrl() . '" class="rounded" width="30" height="30"> ' . $coach->getNom() . ' <small style="color: #fc5200;">Coach</small> </li>';
+        $ids = $this->storage->getGroupeMembres($id);
+        foreach ($ids as $key => $value) {
+            $user = $this->storage->getUser($value);
+            $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
+
+        }
+
+
+        $content .= '</ul>';
+        $content .= '</div>';
+        $content .= '</div>';
+
+
+        $content .= '</div>';
+
+
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
 
     }
 
@@ -162,10 +297,11 @@ class GroupeController
         $this->view->setPart('content', $content);
     }
 
-    public function adherer()
+    public function rejoindre()
     {
-        $this->storage->adherer($this->request->getGetParam('id'));
-        $this->outils->POSTredirect('.', 'vous venez de rejoindre un nouveau groupe');
+        $id=$this->request->getGetParam('id');
+        $this->storage->adherer($id);
+        $this->outils->POSTredirect('?o=groupe&a=show&id='.$id, 'vous venez de rejoindre un nouveau groupe');
     }
 
     public function trouverGroupe()

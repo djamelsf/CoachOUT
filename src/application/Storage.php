@@ -25,6 +25,8 @@ interface Storage {
 	public function getGroupeMembres($id);
 	public function supprimerGroupe($id);
 	public function supprimerActivite($id);
+	public function quitterGroupe($id);
+	public function classementGroupe($id);
 }
 
 ?>
