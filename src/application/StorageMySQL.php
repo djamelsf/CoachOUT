@@ -31,6 +31,22 @@ class StorageMySQL implements Storage {
         }
     }
 
+    public function ajouterAthleteGrp($idG,$idU)
+    {
+        $rq = "INSERT INTO adhere (idU,idG) VALUES (:idU,:idG)";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idU' => $idU,
+            ':idG' => $idG,
+        );
+        $t=$stmt->execute($data);
+        if ($t) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public function createActivite(Activite $activite)
     {
         $rq = "INSERT INTO activite (idAc,nom,description,distance,date,elapsed_time,idU,time) VALUES (:idAc,:nom,:description,:distance,:date,:elapsed_time,:idU,:time)";
@@ -257,6 +273,22 @@ class StorageMySQL implements Storage {
         return $tab;
 
 
+    }
+
+    public function chercherAthlete($id,$nom)
+    {
+        $rq = "SELECT * FROM user,adhere WHERE user.idU=adhere.idU AND adhere.idG!= :id AND (user.prenom LIKE :nom OR user.nom LIKE :nom)";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':id' => $id,
+            ':nom' => '%'.$nom.'%',
+        );
+        $stmt->execute($data);
+        $tab=[];
+        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            $tab[$setup['idU']]=new Athlete($setup['idU'],$setup['nom'],$setup['prenom'],$setup['weight'],$setup['type'],$setup['imageUrl']);
+        }
+        return $tab;
     }
 
     public function getActivitesOdered($id)

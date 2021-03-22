@@ -290,7 +290,7 @@ class GroupeController
             $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
         }
 
-        $content .= '</ul> </div> </div> </div>';
+        $content .= '</ul> <a href="?o=groupe&a=inviter&id='.$id.'" style="background-color: #fc5200; border-color: #fc5200;" class="btn btn-primary">Inviter un athlète</a> </div> </div> </div>';
 
 
         $this->view->setPart('title', $title);
@@ -302,6 +302,44 @@ class GroupeController
         $id=$this->request->getGetParam('id');
         $this->storage->adherer($id);
         $this->outils->POSTredirect('?o=groupe&a=show&id='.$id, 'vous venez de rejoindre un nouveau groupe');
+    }
+
+    public function inviter(){
+        $title="inviter";
+        $content='<form class="container" method="get"> <div class="form-group"> <input type="hidden" name="id" value="'.$_GET['id'].'"> <input type="hidden" name="o" value="groupe"> <input type="hidden" name="a" value="confInvit"> <input type="text" name="nomU" class="form-control" placeholder="Nom/Prénom Athlète">';
+        $content.='</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Chercher</button> </form>';
+        $this->view->setPart('title',$title);
+        $this->view->setPart('content',$content);
+    }
+
+    public function confInvit(){
+        $title="inviter";
+        $content='';
+        $mot=$this->request->getGetParam('nomU');
+        $id= $this->request->getGetParam('id');
+        $res=$this->storage->chercherAthlete($id,$mot);
+        $content.='<div class="container">';
+        foreach($res as $key => $value){
+            $content.='<div class="col-sm-12">';
+            $content.='<div class="card">';
+            $content.='<div class="card-body">';
+            $content.='<a href="?o=athlete&a=show&id='.$value->getIdU().'"><img src="'.$value->getImageUrl().'" class="float-right" width="50" height="50"> </a>';
+            $content.='<h5 class="card-title">'.$value->getPrenom().' '.$value->getNom()    .'</h5>';
+            $content.='<a href="?o=groupe&a=ajout&idG='.$id.'&idU='.$value->getIdU().'" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Inviter</a>';
+            $content.='</div></div>';
+            $content.='</div>';
+
+        }
+        $content.='</div>';
+        $this->view->setPart('title',$title);
+        $this->view->setPart('content',$content);
+    }
+
+    public function ajout(){
+        $idg=$this->request->getGetParam('idG');
+        $idu=$this->request->getGetParam('idU');
+        $this->storage->ajouterAthleteGrp($idg,$idu);
+        $this->outils->POSTredirect('?o=groupe&a=mesGroupes','Athlète ajouté');
     }
 
     public function trouverGroupe()
