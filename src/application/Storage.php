@@ -27,8 +27,10 @@ interface Storage {
 	public function supprimerActivite($id);
 	public function quitterGroupe($id);
 	public function classementGroupe($id);
-	public function chercherAthlete($id,$nom);
+	public function chercherAthlete($nom);
 	public function ajouterAthleteGrp($idG,$idU);
+	public function athleteisInGroupe($id,$idG);
+	public function supprimerAthlete($idU,$idG);
 }
 
 ?>

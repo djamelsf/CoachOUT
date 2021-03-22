@@ -290,7 +290,7 @@ class GroupeController
             $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
         }
 
-        $content .= '</ul> <a href="?o=groupe&a=inviter&id='.$id.'" style="background-color: #fc5200; border-color: #fc5200;" class="btn btn-primary">Inviter un athlète</a> </div> </div> </div>';
+        $content .= '</ul> <a href="?o=groupe&a=inviter&id='.$id.'" style="background-color: #fc5200; border-color: #fc5200;" class="btn btn-primary">Inviter/Supprimer un athlète</a> </div> </div> </div>';
 
 
         $this->view->setPart('title', $title);
@@ -307,7 +307,7 @@ class GroupeController
     public function inviter(){
         $title="inviter";
         $content='<form class="container" method="get"> <div class="form-group"> <input type="hidden" name="id" value="'.$_GET['id'].'"> <input type="hidden" name="o" value="groupe"> <input type="hidden" name="a" value="confInvit"> <input type="text" name="nomU" class="form-control" placeholder="Nom/Prénom Athlète">';
-        $content.='</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Chercher</button> </form>';
+        $content.='</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Chercher</button> <a class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;" href="?id='.$_GET['id'].'&o=groupe&a=confInvit&nomU=">Tous les athlètes</a> <a class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;" href="#">Mes athlètes</a></form>';
         $this->view->setPart('title',$title);
         $this->view->setPart('content',$content);
     }
@@ -317,7 +317,7 @@ class GroupeController
         $content='';
         $mot=$this->request->getGetParam('nomU');
         $id= $this->request->getGetParam('id');
-        $res=$this->storage->chercherAthlete($id,$mot);
+        $res=$this->storage->chercherAthlete($mot);
         $content.='<div class="container">';
         foreach($res as $key => $value){
             $content.='<div class="col-sm-12">';
@@ -325,7 +325,11 @@ class GroupeController
             $content.='<div class="card-body">';
             $content.='<a href="?o=athlete&a=show&id='.$value->getIdU().'"><img src="'.$value->getImageUrl().'" class="float-right" width="50" height="50"> </a>';
             $content.='<h5 class="card-title">'.$value->getPrenom().' '.$value->getNom()    .'</h5>';
-            $content.='<a href="?o=groupe&a=ajout&idG='.$id.'&idU='.$value->getIdU().'" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Inviter</a>';
+            if($this->storage->athleteisInGroupe($value->getIdU(),$id)){
+                $content.='<a href="?o=groupe&a=supprAt&idG='.$id.'&idU='.$value->getIdU().'" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Supprimer</a>';
+            }else{
+                $content.='<a href="?o=groupe&a=ajout&idG='.$id.'&idU='.$value->getIdU().'" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Inviter</a>';
+            }
             $content.='</div></div>';
             $content.='</div>';
 
@@ -333,6 +337,17 @@ class GroupeController
         $content.='</div>';
         $this->view->setPart('title',$title);
         $this->view->setPart('content',$content);
+    }
+
+    public function supprAt(){
+        $idG=$this->request->getGetParam('idG');
+        $idU=$this->request->getGetParam('idU');
+        if($this->storage->getCoachGroupe($idG)==$_SESSION['user']['athlete']['id']){
+            $this->storage->supprimerAthlete($idU,$idG);
+            $this->outils->POSTredirect('?o=groupe&a=show&id='.$idG,'Athlète supprimé');
+        }else{
+            $this->outils->POSTredirect('.','Erreur');
+        }
     }
 
     public function ajout(){

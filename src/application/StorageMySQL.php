@@ -275,12 +275,12 @@ class StorageMySQL implements Storage {
 
     }
 
-    public function chercherAthlete($id,$nom)
+    public function chercherAthlete($nom)
     {
-        $rq = "SELECT * FROM user,adhere WHERE user.idU=adhere.idU AND adhere.idG!= :id AND (user.prenom LIKE :nom OR user.nom LIKE :nom)";
+        $rq = "SELECT * FROM user WHERE (user.prenom LIKE :nom OR user.nom LIKE :nom) AND idU!= :id";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
-            ':id' => $id,
+            ':id' => $_SESSION['user']['athlete']['id'],
             ':nom' => '%'.$nom.'%',
         );
         $stmt->execute($data);
@@ -380,6 +380,37 @@ class StorageMySQL implements Storage {
         }
 
         return $tab;
+    }
+
+    public function athleteisInGroupe($id,$idG)
+    {
+        $rq = "SELECT * FROM adhere WHERE idU= :idU AND idG= :idG";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idU' => $id,
+            ':idG' => $idG,
+        );
+        $stmt->execute($data);
+        $result = $stmt->fetchAll();
+        if (empty($result)) {
+            return 0;
+        }else{
+            return 1;
+        }
+    }
+
+    public function supprimerAthlete($idU,$idG){
+        $rq = "DELETE FROM adhere WHERE idG= :idG AND idU= :idU";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idG' => $idG,
+            ':idU' => $idU,
+        );
+        if ($stmt->execute($data)) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
 
