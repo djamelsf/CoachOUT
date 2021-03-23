@@ -34,6 +34,7 @@ interface Storage {
 	public function getCommentaires($id);
 	public function getActivite($id);
 	public function createCommentaire(Commentaire $commentaire);
+	public function getDistanceTotal($id);
 }
 
 ?>

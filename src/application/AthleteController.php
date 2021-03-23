@@ -176,6 +176,10 @@ class AthleteController
         $content.='<img src="'.$athlete->getImageUrl().'" width="200" height="200" class="float-left">';
         $content.='<div class="card-body float-left">';
         $content.='<h5 class="card-title">'.$athlete->getPrenom().'</h5>';
+        $content .= '<p class="card-text">Totale distance parcourue : '.$this->storage->getDistanceTotal($id)[0].' Km</p>';
+        $time = ($this->storage->getDistanceTotal($id)[1]) / 60;
+        $allure = ($time / ($this->storage->getDistanceTotal($id)[0])) * 60;
+        $content .= '<p class="card-text">Allure moyenne : '.date('i:s', $allure) .'/Km</p>';
         $content.='</div> </div> <div class="col-sm-12"><br>';
         $content.='<ul class="nav nav-tabs" id="myTab" role="tablist">
   <li class="nav-item">
@@ -200,16 +204,19 @@ class AthleteController
         $activites=$this->storage->getMyActivites($id);
 
         foreach ($activites as $key => $value){
+            $time = ($value->getElapsedTime()) / 60;
+            $allure = ($time / ($value->getDistance())) * 60;
+            $nbComments = count($this->storage->getCommentaires($value->getIdAc()));
             $content.='<div class="card"> <div class="card-body">';
             $content.='<h5 class="card-title">'.$value->getNom().'</h5>';
-            $content.='<p class="card-text">Description : course le matin avant daller au boulot, cetait pas mal</p>';
-            $content.='<p class="card-text">Distance : 10,5 Km</p>';
-            $content.='<p class="card-text">Durée :02:00:00</p>';
-            $content.='<p class="card-text">Allure :09:05/Km</p>';
-            $content.='<p>2021-03-16 16:06:42</p>';
+            $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
+            $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
+            $content .= '<p class="card-text">Durée :' . date('H:i:s', $value->getElapsedTime()) . '</p>';
+            $content .= '<p class="card-text">Allure :' . date('i:s', $allure) . '/Km</p>';
+            $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
 
-            $content.='<a href="#" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
-            $content.='<small class="float-right">5 commentaire(s)</small>';
+            $content.='<a href="?o=commentaire&a=show&idAc=' . $value->getIdAc() . '"  class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+            $content.='<small class="float-right">'.$nbComments.' commentaire(s)</small>';
             $content.='</div> </div>';
 
         }

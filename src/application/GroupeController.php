@@ -23,8 +23,6 @@ class GroupeController
         $this->autenticationManager = $autenticationManager;
         $this->storage = $storage;
         $this->outils = $outils;
-
-
         $this->view->setPart('menu', $this->outils->getMenu());
     }
 
@@ -55,7 +53,7 @@ class GroupeController
     public function sauverGroupe()
     {
         $groupe = new Groupe($_POST['nom'], $_POST['description'], $_SESSION['user']['athlete']['id']);
-        $p = $this->storage->createGroupe($groupe);
+        $this->storage->createGroupe($groupe);
         $this->outils->POSTredirect('.', 'Groupe crée');
 
     }
@@ -101,7 +99,8 @@ class GroupeController
         }
     }
 
-    public function quitter(){
+    public function quitter()
+    {
         $title = 'Quitter groupe';
         $idG = $this->request->getGetParam('id');
         $content = '<form class="container" method="post" action="?o=groupe&a=confirQuitter&id=' . $idG . '"> <h5>Voulez vous quitter ce groupe ?</h5>';
@@ -114,7 +113,8 @@ class GroupeController
         $this->view->setPart('content', $content);
     }
 
-    public function confirQuitter(){
+    public function confirQuitter()
+    {
         if ($_POST['ouiNon'] == 'oui') {
             $this->storage->quitterGroupe($this->request->getGetParam('id'));
             $this->outils->POSTredirect('.', 'Vous avez quitté un groupe');
@@ -163,9 +163,9 @@ class GroupeController
         $content .= '<div class="col">';
         $activites = $this->storage->getActivitesByGroupe($id);
         foreach ($activites as $key => $value) {
-            $time=($value->getElapsedTime())/60;
-            $allure=($time/($value->getDistance()))*60;
-            $nbComments=count($this->storage->getCommentaires($value->getIdAc()));
+            $time = ($value->getElapsedTime()) / 60;
+            $allure = ($time / ($value->getDistance())) * 60;
+            $nbComments = count($this->storage->getCommentaires($value->getIdAc()));
             $athlete = $this->storage->getUser($value->getIdu());
             $content .= '<div class="card">';
             $content .= '<div class="card-body">';
@@ -174,11 +174,11 @@ class GroupeController
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
             $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
             $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
-            $content.='<p class="card-text">Durée :'.date('H:i:s',$value->getElapsedTime()).'</p>';
-            $content.='<p class="card-text">Allure :'.date('i:s',$allure).'/Km</p>';
+            $content .= '<p class="card-text">Durée :' . date('H:i:s', $value->getElapsedTime()) . '</p>';
+            $content .= '<p class="card-text">Allure :' . date('i:s', $allure) . '/Km</p>';
             $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
-            $content .= '<a href="?o=commentaire&a=show&idAc='.$value->getIdAc().'" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
-            $content .= '<small class="float-right">'.$nbComments.' commentaire(s)</small>';
+            $content .= '<a href="?o=commentaire&a=show&idAc=' . $value->getIdAc() . '" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+            $content .= '<small class="float-right">' . $nbComments . ' commentaire(s)</small>';
 
             $content .= '</div> </div>';
             $content .= '<br>';
@@ -232,7 +232,7 @@ class GroupeController
         $content .= '<div class="card-body">';
         $content .= '<p>Description du groupe : ' . $groupe->getDescription() . '</p>';
 
-        $content .= '<a href="?o=groupe&a=rejoindre&id='.$id.'" class="btn btn-link" style="color: #fc5200;">Rejoindre le groupe</a>';
+        $content .= '<a href="?o=groupe&a=rejoindre&id=' . $id . '" class="btn btn-link" style="color: #fc5200;">Rejoindre le groupe</a>';
 
 
         $content .= '</div> </div> </div>';
@@ -277,20 +277,20 @@ class GroupeController
             $athlete = $this->storage->getUser($value->getIdU());
             $img = $athlete->getImageUrl();
             $nom = $athlete->getPrenom();
-            $time=($value->getElapsedTime())/60;
-            $allure=($time/($value->getDistance()))*60;
-            $nbComments=count($this->storage->getCommentaires($value->getIdAc()));
+            $time = ($value->getElapsedTime()) / 60;
+            $allure = ($time / ($value->getDistance())) * 60;
+            $nbComments = count($this->storage->getCommentaires($value->getIdAc()));
             $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
             $content .= '<a href="?o=athlete&a=show&id=' . $value->getIdU() . '" class="float-right text-dark" style="text-decoration: none;">' . $nom . '
             <img src="' . $img . '" class="rounded" width="50" height="50"></a>';
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
             $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
             $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
-            $content.='<p class="card-text">Durée :'.date('H:i:s',$value->getElapsedTime()).'</p>';
-            $content.='<p class="card-text">Allure :'.date('i:s',$allure).'/Km</p>';
+            $content .= '<p class="card-text">Durée :' . date('H:i:s', $value->getElapsedTime()) . '</p>';
+            $content .= '<p class="card-text">Allure :' . date('i:s', $allure) . '/Km</p>';
             $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
-            $content .= '<a href="?o=commentaire&a=show&idAc='.$value->getIdAc().'" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
-            $content .= '<small class="float-right">'.$nbComments.' commentaire(s)</small>';
+            $content .= '<a href="?o=commentaire&a=show&idAc=' . $value->getIdAc() . '" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+            $content .= '<small class="float-right">' . $nbComments . ' commentaire(s)</small>';
             $content .= ' </div> </div> </div> <br>';
         }
         $content .= '</div> </div>';
@@ -302,7 +302,7 @@ class GroupeController
             $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
         }
 
-        $content .= '</ul> <a href="?o=groupe&a=inviter&id='.$id.'" style="background-color: #fc5200; border-color: #fc5200;" class="btn btn-primary">Inviter/Supprimer un athlète</a> </div> </div> </div>';
+        $content .= '</ul> <a href="?o=groupe&a=inviter&id=' . $id . '" style="background-color: #fc5200; border-color: #fc5200;" class="btn btn-primary">Inviter/Supprimer un athlète</a> </div> </div> </div>';
 
 
         $this->view->setPart('title', $title);
@@ -311,62 +311,66 @@ class GroupeController
 
     public function rejoindre()
     {
-        $id=$this->request->getGetParam('id');
+        $id = $this->request->getGetParam('id');
         $this->storage->adherer($id);
-        $this->outils->POSTredirect('?o=groupe&a=show&id='.$id, 'vous venez de rejoindre un nouveau groupe');
+        $this->outils->POSTredirect('?o=groupe&a=show&id=' . $id, 'vous venez de rejoindre un nouveau groupe');
     }
 
-    public function inviter(){
-        $title="inviter";
-        $content='<form class="container" method="get"> <div class="form-group"> <input type="hidden" name="id" value="'.$_GET['id'].'"> <input type="hidden" name="o" value="groupe"> <input type="hidden" name="a" value="confInvit"> <input type="text" name="nomU" class="form-control" placeholder="Nom/Prénom Athlète">';
-        $content.='</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Chercher</button> <a class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;" href="?id='.$_GET['id'].'&o=groupe&a=confInvit&nomU=">Tous les athlètes</a></form>';
-        $this->view->setPart('title',$title);
-        $this->view->setPart('content',$content);
+    public function inviter()
+    {
+        $title = "inviter";
+        $content = '<form class="container" method="get"> <div class="form-group"> <input type="hidden" name="id" value="' . $_GET['id'] . '"> <input type="hidden" name="o" value="groupe"> <input type="hidden" name="a" value="confInvit"> <input type="text" name="nomU" class="form-control" placeholder="Nom/Prénom Athlète">';
+        $content .= '</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Chercher</button> <a class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;" href="?id=' . $_GET['id'] . '&o=groupe&a=confInvit&nomU=">Tous les athlètes</a></form>';
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
     }
 
-    public function confInvit(){
-        $title="inviter";
-        $content='';
-        $mot=$this->request->getGetParam('nomU');
-        $id= $this->request->getGetParam('id');
-        $res=$this->storage->chercherAthlete($mot);
-        $content.='<div class="container">';
-        foreach($res as $key => $value){
-            $content.='<div class="col-sm-12">';
-            $content.='<div class="card">';
-            $content.='<div class="card-body">';
-            $content.='<a href="?o=athlete&a=show&id='.$value->getIdU().'"><img src="'.$value->getImageUrl().'" class="float-right" width="50" height="50"> </a>';
-            $content.='<h5 class="card-title">'.$value->getPrenom().' '.$value->getNom()    .'</h5>';
-            if($this->storage->athleteisInGroupe($value->getIdU(),$id)){
-                $content.='<a href="?o=groupe&a=supprAt&idG='.$id.'&idU='.$value->getIdU().'" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Supprimer</a>';
-            }else{
-                $content.='<a href="?o=groupe&a=ajout&idG='.$id.'&idU='.$value->getIdU().'" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Inviter</a>';
+    public function confInvit()
+    {
+        $title = "inviter";
+        $content = '';
+        $mot = $this->request->getGetParam('nomU');
+        $id = $this->request->getGetParam('id');
+        $res = $this->storage->chercherAthlete($mot);
+        $content .= '<div class="container">';
+        foreach ($res as $key => $value) {
+            $content .= '<div class="col-sm-12">';
+            $content .= '<div class="card">';
+            $content .= '<div class="card-body">';
+            $content .= '<a href="?o=athlete&a=show&id=' . $value->getIdU() . '"><img src="' . $value->getImageUrl() . '" class="float-right" width="50" height="50"> </a>';
+            $content .= '<h5 class="card-title">' . $value->getPrenom() . ' ' . $value->getNom() . '</h5>';
+            if ($this->storage->athleteisInGroupe($value->getIdU(), $id)) {
+                $content .= '<a href="?o=groupe&a=supprAt&idG=' . $id . '&idU=' . $value->getIdU() . '" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Supprimer</a>';
+            } else {
+                $content .= '<a href="?o=groupe&a=ajout&idG=' . $id . '&idU=' . $value->getIdU() . '" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Inviter</a>';
             }
-            $content.='</div></div>';
-            $content.='</div>';
+            $content .= '</div></div>';
+            $content .= '</div>';
 
         }
-        $content.='</div>';
-        $this->view->setPart('title',$title);
-        $this->view->setPart('content',$content);
+        $content .= '</div>';
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
     }
 
-    public function supprAt(){
-        $idG=$this->request->getGetParam('idG');
-        $idU=$this->request->getGetParam('idU');
-        if($this->storage->getCoachGroupe($idG)==$_SESSION['user']['athlete']['id']){
-            $this->storage->supprimerAthlete($idU,$idG);
-            $this->outils->POSTredirect('?o=groupe&a=show&id='.$idG,'Athlète supprimé');
-        }else{
-            $this->outils->POSTredirect('.','Erreur');
+    public function supprAt()
+    {
+        $idG = $this->request->getGetParam('idG');
+        $idU = $this->request->getGetParam('idU');
+        if ($this->storage->getCoachGroupe($idG) == $_SESSION['user']['athlete']['id']) {
+            $this->storage->supprimerAthlete($idU, $idG);
+            $this->outils->POSTredirect('?o=groupe&a=show&id=' . $idG, 'Athlète supprimé');
+        } else {
+            $this->outils->POSTredirect('.', 'Erreur');
         }
     }
 
-    public function ajout(){
-        $idg=$this->request->getGetParam('idG');
-        $idu=$this->request->getGetParam('idU');
-        $this->storage->ajouterAthleteGrp($idg,$idu);
-        $this->outils->POSTredirect('?o=groupe&a=mesGroupes','Athlète ajouté');
+    public function ajout()
+    {
+        $idg = $this->request->getGetParam('idG');
+        $idu = $this->request->getGetParam('idU');
+        $this->storage->ajouterAthleteGrp($idg, $idu);
+        $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Athlète ajouté');
     }
 
     public function trouverGroupe()

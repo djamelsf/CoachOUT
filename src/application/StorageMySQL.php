@@ -348,7 +348,7 @@ class StorageMySQL implements Storage {
         $data=[];
         while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
             array_push($labels,$setup['date']);
-            array_push($data,($setup['distance'])/1000);
+            array_push($data,($setup['distance']));
         }
         return [$labels,$data];
     }
@@ -456,6 +456,21 @@ class StorageMySQL implements Storage {
         }else{
             return false;
         }
+    }
+
+    public function getDistanceTotal($id)
+    {
+        $rq = "SELECT SUM(activite.distance),SUM(activite.elapsed_time) FROM  activite WHERE activite.idU= :idU";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idU' => $id,
+        );
+        $stmt->execute($data);
+        $c=null;
+        if ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            $c=[$setup['SUM(activite.distance)'],$setup['SUM(activite.elapsed_time)']];
+        }
+        return $c;
     }
 
 
