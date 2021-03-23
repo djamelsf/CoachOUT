@@ -104,14 +104,19 @@ class ActiviteController{
         $title = "Mes activités";
         $content = '<div class="container"> <h2 class="text-center">Mes activités</h2> <div class="col">';
         foreach ($res as $key => $value) {
+            $time=($value->getElapsedTime())/60;
+            $allure=($time/($value->getDistance()))*60;
+            $nbComments=count($this->storage->getCommentaires($value->getIdAc()));
             $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
-            $content .= '<small class="card-text">Description : ' . $value->getDescription() . '</small><br>';
-            $content .= '<small class="card-text">Distance : ' . $value->getDistance() . ' Km</small><br>';
-            $content .= '<small class="card-text">Date : ' . $value->getDate() . '</small><br>';
-            $content .= '<a href="#" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+            $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
+            $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
+            $content.='<p class="card-text">Durée :'.date('H:i:s',$value->getElapsedTime()).'</p>';
+            $content.='<p class="card-text">Allure :'.date('i:s',$allure).'/Km</p>';
+            $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
+            $content .= '<a href="?o=commentaire&a=show&idAc='.$value->getIdAc().'" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
             $content .= '<a href="?o=activite&a=supprimer&id=' . $value->getIdAC(). '" class="btn btn-danger">Supprimer</a>';
-            $content .= '<small class="float-right">5 commentaire(s)</small>';
+            $content .= '<small class="float-right">'.$nbComments.' commentaire(s)</small>';
             $content .= ' </div></div> </div> <br>';
         }
         $content .= '</div></div>';

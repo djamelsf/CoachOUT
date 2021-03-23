@@ -21,14 +21,16 @@ class Outils{
                 $menu = array(
                     "Créer un groupe" =>'?o=groupe&a=nouveauGroupe',
                     "Mes groupes" => '?o=groupe&a=mesGroupes',
-                    "Déconnexion" => '?a=deconnexion',
+                    "Déconnexion(".$_SESSION['user']['athlete']['firstname'].")" => '?a=deconnexion',
                 );
             }else{
                 if($this->storage->isSportif($_SESSION['user']['athlete']['id'])){
                     $menu = array(
                         "Créer un activite" => '?o=activite&a=nouvelleActivite',
                         "Mes activites" => '?o=activite&a=mesActivites',
-                        "Déconnexion" => '?a=deconnexion',
+                        "Mes groupes" => '#',
+                        "Tous les groupes" => '?mot=&o=groupe&a=recherche',
+                        "Déconnexion(".$_SESSION['user']['athlete']['firstname'].")" => '?a=deconnexion',
                     );
                 }else{
                     $menu = array(

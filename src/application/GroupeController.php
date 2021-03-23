@@ -68,9 +68,8 @@ class GroupeController
         foreach ($res as $key => $value) {
             $number = count($this->storage->getGroupeMembres($key));
             $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
-            $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
+            $content .= '<a href="?o=groupe&a=show&id=' . $key . '" ><h5 class="card-title">' . $value->getNom() . '</h5> </a>';
             $content .= '<p class="card-text">' . $value->getDescription() . '</p>';
-            $content .= '<a href="?o=groupe&a=show&id=' . $key . '" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Voir</a>';
             $content .= '<a href="?o=groupe&a=supprimer&id=' . $key . '" class="btn btn-danger">Supprimer</a>';
             $content .= '<small class="float-right">' . $number . ' membre</small>';
             $content .= ' </div></div> </div> <br>';
@@ -164,15 +163,22 @@ class GroupeController
         $content .= '<div class="col">';
         $activites = $this->storage->getActivitesByGroupe($id);
         foreach ($activites as $key => $value) {
+            $time=($value->getElapsedTime())/60;
+            $allure=($time/($value->getDistance()))*60;
+            $nbComments=count($this->storage->getCommentaires($value->getIdAc()));
             $athlete = $this->storage->getUser($value->getIdu());
             $content .= '<div class="card">';
             $content .= '<div class="card-body">';
-            $content .= ' <a href="" class="float-right text-dark" style="text-decoration: none;">' . $athlete->getPrenom()
+            $content .= ' <a href="?o=athlete&a=show&id=' . $value->getIdU() . '" class="float-right text-dark" style="text-decoration: none;">' . $athlete->getPrenom()
                 . ' <img src="' . $athlete->getImageUrl() . '" class="rounded" width="50" height="50"></a>';
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
-            $content .= '<p class="card-text">' . $value->getDescription() . '</p>';
+            $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
+            $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
+            $content.='<p class="card-text">Durée :'.date('H:i:s',$value->getElapsedTime()).'</p>';
+            $content.='<p class="card-text">Allure :'.date('i:s',$allure).'/Km</p>';
+            $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
             $content .= '<a href="?o=commentaire&a=show&idAc='.$value->getIdAc().'" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
-            $content .= '<small class="float-right">5 commentaire(s)</small>';
+            $content .= '<small class="float-right">'.$nbComments.' commentaire(s)</small>';
 
             $content .= '</div> </div>';
             $content .= '<br>';
@@ -271,6 +277,8 @@ class GroupeController
             $athlete = $this->storage->getUser($value->getIdU());
             $img = $athlete->getImageUrl();
             $nom = $athlete->getPrenom();
+            $time=($value->getElapsedTime())/60;
+            $allure=($time/($value->getDistance()))*60;
             $nbComments=count($this->storage->getCommentaires($value->getIdAc()));
             $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
             $content .= '<a href="?o=athlete&a=show&id=' . $value->getIdU() . '" class="float-right text-dark" style="text-decoration: none;">' . $nom . '
@@ -278,8 +286,8 @@ class GroupeController
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
             $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
             $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
-            $content.='<p class="card-text">Durée :02:00:00</p>';
-            $content.='<p class="card-text">Allure :09:05/Km</p>';
+            $content.='<p class="card-text">Durée :'.date('H:i:s',$value->getElapsedTime()).'</p>';
+            $content.='<p class="card-text">Allure :'.date('i:s',$allure).'/Km</p>';
             $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
             $content .= '<a href="?o=commentaire&a=show&idAc='.$value->getIdAc().'" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
             $content .= '<small class="float-right">'.$nbComments.' commentaire(s)</small>';
@@ -311,7 +319,7 @@ class GroupeController
     public function inviter(){
         $title="inviter";
         $content='<form class="container" method="get"> <div class="form-group"> <input type="hidden" name="id" value="'.$_GET['id'].'"> <input type="hidden" name="o" value="groupe"> <input type="hidden" name="a" value="confInvit"> <input type="text" name="nomU" class="form-control" placeholder="Nom/Prénom Athlète">';
-        $content.='</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Chercher</button> <a class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;" href="?id='.$_GET['id'].'&o=groupe&a=confInvit&nomU=">Tous les athlètes</a> <a class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;" href="#">Mes athlètes</a></form>';
+        $content.='</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Chercher</button> <a class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;" href="?id='.$_GET['id'].'&o=groupe&a=confInvit&nomU=">Tous les athlètes</a></form>';
         $this->view->setPart('title',$title);
         $this->view->setPart('content',$content);
     }

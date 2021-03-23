@@ -46,7 +46,7 @@
 	</nav>
 	<main>
         <?php if ($feedback!=''){
-            echo "<p class='feedback'> ".$feedback." </p>";
+            echo '<div class="alert alert-danger" role="alert">'.$feedback.'</div>';
         }?>
 		<?php echo $le_contenu; ?>
 	</main>

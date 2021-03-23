@@ -197,7 +197,7 @@ class StorageMySQL implements Storage {
 
     public function getMyActivites($id)
     {
-        $rq = "SELECT * FROM activite WHERE idU= :idU";
+        $rq = "SELECT * FROM activite WHERE idU= :idU ORDER BY(activite.date) DESC";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':idU' => $id,

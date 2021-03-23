@@ -53,14 +53,17 @@ class CommentaireController{
             $this->storage->createCommentaire($commentaire);
             $this->outils->POSTredirect('?o=commentaire&a=show&idAc='.$idAc,'Message envoyé');
         }
+        $time=($activite->getElapsedTime())/60;
+        $allure=($time/($activite->getDistance()))*60;
         $title='Activité';
         $content='<div class="card container">';
         $content.='<div class="card-body">';
         $content.='<h5 class="card-title">'.$activite->getNom().'</h5>';
-        $content.='<p class="card-text">Description : '.$activite->getDescription().'</p>';
-        $content.='<p class="card-text">Distance : '.$activite->getDistance().' Km</p>';
-        $content.='<p class="card-text">Durée : '.$activite->getElapsedTime().'</p>';
-        $content.='<p>'.$activite->getDate().'</p>';
+        $content .= '<p class="card-text">Description : ' . $activite->getDescription() . '</p>';
+        $content .= '<p class="card-text">Distance : ' . $activite->getDistance() . ' Km</p>';
+        $content.='<p class="card-text">Durée :'.date('H:i:s',$activite->getElapsedTime()).'</p>';
+        $content.='<p class="card-text">Allure :'.date('i:s',$allure).'/Km</p>';
+        $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($activite->getDate())) . '</p>';
         $content.='</div></div><br>';
         //formulaire texte
         $content.='<div class="container"><div class="row"><div class="col-sm-4"><form method="post" action="">';
