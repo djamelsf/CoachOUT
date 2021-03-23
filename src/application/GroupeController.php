@@ -36,6 +36,9 @@ class GroupeController
 
     }
 
+    /**
+     * Formulaire d'inscription d'un nouveau groupe
+     */
     public function nouveauGroupe()
     {
         $content = '<div class="container"> <h2 class="text-center">Nouveau groupe</h2>';
@@ -45,19 +48,24 @@ class GroupeController
         $content .= '<div class="form-group"> <label for="inputName">Description</label>';
         $content .= '<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="description" required></textarea> </div>';
         $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Ajouter</button>';
-
         $this->view->setPart('title', 'Inscription');
         $this->view->setPart('content', $content);
     }
 
+    /**
+     * Enregistrement d'un nouveau groupe avec redirection vers (Mes groupes)
+     */
     public function sauverGroupe()
     {
         $groupe = new Groupe($_POST['nom'], $_POST['description'], $_SESSION['user']['athlete']['id']);
         $this->storage->createGroupe($groupe);
-        $this->outils->POSTredirect('.', 'Groupe crée');
+        $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Groupe crée');
 
     }
 
+    /**
+     * Affichage des groupe d'un coach
+     */
     public function mesGroupes()
     {
         $res = $this->storage->getMyGroupes($_SESSION['user']['athlete']['id']);
@@ -77,6 +85,9 @@ class GroupeController
         $this->view->setPart('content', $content);
     }
 
+    /**
+     * Formulaire suppresion groupe
+     */
     public function supprimer()
     {
         $title = 'Suppresion';
@@ -91,14 +102,20 @@ class GroupeController
         $this->view->setPart('content', $content);
     }
 
+    /**
+     * Suppresion d'un grouep avec redirection vers (Mes groupes)
+     */
     public function confirSuppr()
     {
         if ($_POST['ouiNon'] == 'oui') {
             $this->storage->supprimerGroupe($this->request->getGetParam('id'));
-            $this->outils->POSTredirect('.', 'Groupe supprimé');
+            $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Groupe supprimé');
         }
     }
 
+    /**
+     * Formulaire pour qu'un athlète quitte un groupe
+     */
     public function quitter()
     {
         $title = 'Quitter groupe';
@@ -113,6 +130,9 @@ class GroupeController
         $this->view->setPart('content', $content);
     }
 
+    /**
+     * Confirmer de quitter le groupe
+     */
     public function confirQuitter()
     {
         if ($_POST['ouiNon'] == 'oui') {
@@ -121,6 +141,9 @@ class GroupeController
         }
     }
 
+    /**
+     * Affichage d'un groupe selon l'utilisateur
+     */
     public function show()
     {
         $id = $this->request->getGetParam('id');
@@ -130,36 +153,29 @@ class GroupeController
             } else {
                 $this->showUnknownGroupe();
             }
-
         } else {
             $this->showMyGroupe();
         }
-
     }
 
+    /**
+     * Affichage d'un groupe (Pour un athlète déjà inscrit dans ce groupe)
+     */
     public function showGroupe()
     {
-
         $id = $this->request->getGetParam('id');
         $groupe = $this->storage->getGroupe($id);
         $coach = $this->storage->getUser($groupe->getIdU());
         $title = "Groupe de " . $coach->getNom();
         $content = '<div class="row">';
-
         $content .= '<div class="col-sm-8">';
         $content .= '<h2 class="text-center">Groupe : ' . $groupe->getNom() . '</h2>';
         $content .= '<div class="col">';
         $content .= '<div class="card-body">';
         $content .= '<p>Description du groupe : ' . $groupe->getDescription() . '</p>';
-
         $content .= '<a href="?o=groupe&a=quitter&id=' . $id . '" class="btn btn-link" style="color: #fc5200;">Quitter le groupe</a>';
-
-
         $content .= '</div> </div>';
-
-
-        //activites !
-
+        //activites
         $content .= '<div class="col">';
         $activites = $this->storage->getActivitesByGroupe($id);
         foreach ($activites as $key => $value) {
@@ -179,18 +195,11 @@ class GroupeController
             $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
             $content .= '<a href="?o=commentaire&a=show&idAc=' . $value->getIdAc() . '" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
             $content .= '<small class="float-right">' . $nbComments . ' commentaire(s)</small>';
-
             $content .= '</div> </div>';
             $content .= '<br>';
-
         }
-
-
         $content .= '</div>';
-        //////////
         $content .= '</div>';
-
-
         $content .= '<div class="col-sm-4">';
         $content .= '<p class="text-center">Membres</p>';
         $content .= '<div class="card">';
@@ -202,22 +211,17 @@ class GroupeController
             $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
 
         }
-
-
         $content .= '</ul>';
         $content .= '</div>';
         $content .= '</div>';
-
-
         $content .= '</div>';
-
-
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
-
-
     }
 
+    /**
+     * Affichage d'un groupe (Pour un athlète NON inscrit dans ce groupe)
+     */
     public function showUnknownGroupe()
     {
         $id = $this->request->getGetParam('id');
@@ -225,19 +229,13 @@ class GroupeController
         $coach = $this->storage->getUser($groupe->getIdU());
         $title = "Groupe de " . $coach->getNom();
         $content = '<div class="row">';
-
         $content .= '<div class="col-sm-8">';
         $content .= '<h2 class="text-center">Groupe : ' . $groupe->getNom() . '</h2>';
         $content .= '<div class="col">';
         $content .= '<div class="card-body">';
         $content .= '<p>Description du groupe : ' . $groupe->getDescription() . '</p>';
-
         $content .= '<a href="?o=groupe&a=rejoindre&id=' . $id . '" class="btn btn-link" style="color: #fc5200;">Rejoindre le groupe</a>';
-
-
         $content .= '</div> </div> </div>';
-
-
         $content .= '<div class="col-sm-4">';
         $content .= '<p class="text-center">Membres</p>';
         $content .= '<div class="card">';
@@ -249,21 +247,17 @@ class GroupeController
             $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
 
         }
-
-
         $content .= '</ul>';
         $content .= '</div>';
         $content .= '</div>';
-
-
         $content .= '</div>';
-
-
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
-
     }
 
+    /**
+     * Affichage d'un groupe (Pour un coach qui possède ce groupe)
+     */
     public function showMyGroupe()
     {
         $res = $this->storage->getActivitesByGroupe($this->request->getGetParam('id'));
@@ -301,14 +295,14 @@ class GroupeController
             $user = $this->storage->getUser($value);
             $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
         }
-
         $content .= '</ul> <a href="?o=groupe&a=inviter&id=' . $id . '" style="background-color: #fc5200; border-color: #fc5200;" class="btn btn-primary">Inviter/Supprimer un athlète</a> </div> </div> </div>';
-
-
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
     }
 
+    /**
+     * Une fonction qui permet a un athlète de rejoindre un Groupe
+     */
     public function rejoindre()
     {
         $id = $this->request->getGetParam('id');
@@ -316,6 +310,9 @@ class GroupeController
         $this->outils->POSTredirect('?o=groupe&a=show&id=' . $id, 'vous venez de rejoindre un nouveau groupe');
     }
 
+    /**
+     * Formulaire qui permet a un Coach de chercher un athlète afin de l'integrer/supprimer de son groupe
+     */
     public function inviter()
     {
         $title = "inviter";
@@ -325,6 +322,9 @@ class GroupeController
         $this->view->setPart('content', $content);
     }
 
+    /**
+     * Résultat de recherche des athlètes
+     */
     public function confInvit()
     {
         $title = "inviter";
@@ -346,13 +346,15 @@ class GroupeController
             }
             $content .= '</div></div>';
             $content .= '</div>';
-
         }
         $content .= '</div>';
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
     }
 
+    /**
+     * Suppresion d'un athète d'un groupe (par un Coach)
+     */
     public function supprAt()
     {
         $idG = $this->request->getGetParam('idG');
@@ -365,6 +367,9 @@ class GroupeController
         }
     }
 
+    /**
+     * L'ajout d'un athlète  dans un groupe (par un Coach)
+     */
     public function ajout()
     {
         $idg = $this->request->getGetParam('idG');
@@ -373,20 +378,9 @@ class GroupeController
         $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Athlète ajouté');
     }
 
-    public function trouverGroupe()
-    {
-        $title = "Chercher un groupe";
-        $content = "<form method='get'>";
-        $content .= "<input type='hidden' name='o' value='groupe'>";
-        $content .= "<input type='hidden' name='a' value='recherche'>";
-        $content .= "<input type='text' name='mot'>";
-        $content .= "<input type='submit'>";
-        $content .= "</form>";
-
-        $this->view->setPart('title', $title);
-        $this->view->setPart('content', $content);
-    }
-
+    /**
+     * Rèsulat de recherche d'un groupe (BARRE DE NAVIGATION)
+     */
     public function recherche()
     {
         $title = "Résulat de la recherche";
@@ -403,7 +397,6 @@ class GroupeController
             $content .= '<a href="?o=groupe&a=show&id=' . $key . '" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Voir</a>';
             $content .= '<small class="float-right">' . $number . ' membre</small>';
             $content .= ' </div></div> </div> <br>';
-
         }
         $content .= '</div></div>';
         $this->view->setPart('title', $title);

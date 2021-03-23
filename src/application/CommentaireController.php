@@ -1,11 +1,13 @@
 <?php
+
 namespace Djs\Application;
 
 use Djs\Framework\Request;
 use Djs\Framework\View;
 use Djs\Framework\Response;
 
-class CommentaireController{
+class CommentaireController
+{
     protected $request;
     protected $response;
     protected $view;
@@ -22,7 +24,7 @@ class CommentaireController{
      * @param $storage
      * @param $outils
      */
-    public function __construct(Request $request,Response $response,View $view,AutenticationManager $autenticationManager,Storage $storage,Outils $outils)
+    public function __construct(Request $request, Response $response, View $view, AutenticationManager $autenticationManager, Storage $storage, Outils $outils)
     {
         $this->request = $request;
         $this->response = $response;
@@ -35,72 +37,68 @@ class CommentaireController{
 
     public function execute($action)
     {
-        if(method_exists($this,$action)){
+        if (method_exists($this, $action)) {
             $this->$action();
-        }else{
+        } else {
             echo "wrong function";
         }
 
     }
 
-    public function defaultAction(){}
+    public function defaultAction()
+    {
+    }
 
-    public function show(){
-        $idAc=$this->request->getGetParam('idAc');
-        $activite=$this->storage->getActivite($idAc);
-        if (!empty($_POST)){
-            $commentaire=new Commentaire($_POST['texte'],date('Y-m-d H:i:s'),$_SESSION['user']['athlete']['id'],$idAc);
+    /**
+     * Affichage d'une activité avec ses commentaires + zone pour taper un commentaire.
+     */
+    public function show()
+    {
+        $idAc = $this->request->getGetParam('idAc');
+        $activite = $this->storage->getActivite($idAc);
+        if (!empty($_POST)) {
+            $commentaire = new Commentaire($_POST['texte'], date('Y-m-d H:i:s'), $_SESSION['user']['athlete']['id'], $idAc);
             $this->storage->createCommentaire($commentaire);
-            $this->outils->POSTredirect('?o=commentaire&a=show&idAc='.$idAc,'Message envoyé');
+            $this->outils->POSTredirect('?o=commentaire&a=show&idAc=' . $idAc, 'Message envoyé');
         }
-        $time=($activite->getElapsedTime())/60;
-        $allure=($time/($activite->getDistance()))*60;
-        $title='Activité';
-        $content='<div class="card container">';
-        $content.='<div class="card-body">';
-        $content.='<h5 class="card-title">'.$activite->getNom().'</h5>';
+        $time = ($activite->getElapsedTime()) / 60;
+        $allure = ($time / ($activite->getDistance())) * 60;
+        $title = 'Activité';
+        $content = '<div class="card container">';
+        $content .= '<div class="card-body">';
+        $content .= '<h5 class="card-title">' . $activite->getNom() . '</h5>';
         $content .= '<p class="card-text">Description : ' . $activite->getDescription() . '</p>';
         $content .= '<p class="card-text">Distance : ' . $activite->getDistance() . ' Km</p>';
-        $content.='<p class="card-text">Durée :'.date('H:i:s',$activite->getElapsedTime()).'</p>';
-        $content.='<p class="card-text">Allure :'.date('i:s',$allure).'/Km</p>';
+        $content .= '<p class="card-text">Durée :' . date('H:i:s', $activite->getElapsedTime()) . '</p>';
+        $content .= '<p class="card-text">Allure :' . date('i:s', $allure) . '/Km</p>';
         $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($activite->getDate())) . '</p>';
-        $content.='</div></div><br>';
+        $content .= '</div></div><br>';
         //formulaire texte
-        $content.='<div class="container"><div class="row"><div class="col-sm-4"><form method="post" action="">';
-        $content.='<div class="form-group"><label>Message</label><textarea name="texte" class="form-control" rows="3" required></textarea>';
-        $content.='</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Envoyer</button>';
-        $content.='</form></div>';
+        $content .= '<div class="container"><div class="row"><div class="col-sm-4"><form method="post" action="">';
+        $content .= '<div class="form-group"><label>Message</label><textarea name="texte" class="form-control" rows="3" required></textarea>';
+        $content .= '</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Envoyer</button>';
+        $content .= '</form></div>';
         //
         //liste des messages
-        $commentaires=$this->storage->getCommentaires($idAc);
-        $content.='<div class="col-sm-8" style="overflow-y: scroll; height:500px; width: auto;">';
-        foreach ($commentaires as $key => $value){
-            $user=$this->storage->getUser($value->getIdu());
-            $content.='<div class="card"><div class="card-body">';
-            $content.='<a href="?o=athlete&a=show&id='.$user->getIdU().'"><img src="'.$user->getImageUrl().'"  class="float-left" width="30" height="30"> </a>';
-            $content.='<h5 class="card-title"> '.$user->getPrenom().'</h5>';
-            $content.='<br><p class="card-text">'.$value->getTexte().'</p>';
-            $content.='<small class="float-right">'.$value->getDate().'</small>';
-            $content.='</div></div>';
+        $commentaires = $this->storage->getCommentaires($idAc);
+        $content .= '<div class="col-sm-8" style="overflow-y: scroll; height:500px; width: auto;">';
+        foreach ($commentaires as $key => $value) {
+            $user = $this->storage->getUser($value->getIdu());
+            $content .= '<div class="card"><div class="card-body">';
+            $content .= '<a href="?o=athlete&a=show&id=' . $user->getIdU() . '"><img src="' . $user->getImageUrl() . '"  class="float-left" width="30" height="30"> </a>';
+            $content .= '<h5 class="card-title"> ' . $user->getPrenom() . '</h5>';
+            $content .= '<br><p class="card-text">' . $value->getTexte() . '</p>';
+            $content .= '<small class="float-right">' . $value->getDate() . '</small>';
+            $content .= '</div></div>';
         }
-        $content.='</div>';
-
-
-
-
-
-        $content.='</div></div>';
-
-
-        $this->view->setPart('title',$title);
-        $this->view->setPart('content',$content);
+        $content .= '</div>';
+        $content .= '</div></div>';
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
     }
 
 
-
-
 }
-
 
 
 ?>
