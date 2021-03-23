@@ -44,6 +44,9 @@ class Router
             case 'groupe':
                 $this->controllerClassName = 'Djs\Application\GroupeController';
                 break;
+            case 'commentaire':
+                $this->controllerClassName = 'Djs\Application\CommentaireController';
+                break;
 
 
             default:

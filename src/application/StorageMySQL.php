@@ -85,6 +85,22 @@ class StorageMySQL implements Storage {
         }
     }
 
+    public function createCommentaire(Commentaire $commentaire)
+    {
+        $rq = "INSERT INTO commentaire (texte,date,idU,idAc) VALUES (:texte,:date,:idU, :idAc)";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':texte' => $commentaire->getTexte(),
+            ':date' => $commentaire->getDate(),
+            ':idU' => $commentaire->getIdU(),
+            ':idAc' => $commentaire->getIdAc(),
+        );
+        $t=$stmt->execute($data);
+        if ($t) {
+            return $this->connexion->lastInsertId();
+        }
+    }
+
     public function adherer($idG)
     {
         $rq = "INSERT INTO adhere (idU,idG) VALUES (:idU,:idG)";
@@ -271,8 +287,37 @@ class StorageMySQL implements Storage {
         }
 
         return $tab;
+    }
 
+    public function getCommentaires($id)
+    {
+        $rq = "SELECT * FROM commentaire WHERE idAc= :id ORDER BY (commentaire.date) DESC";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':id' => $id
+        );
+        $stmt->execute($data);
+        $tab=[];
+        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            $tab[$setup['idC']]=new Commentaire($setup['texte'],$setup['date'],$setup['idU'],$setup['idAc']);
+        }
 
+        return $tab;
+    }
+    public function getActivite($id)
+    {
+        $rq = "SELECT * FROM activite WHERE idAc= :idAc";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':idAc' => $id,
+        );
+        $stmt->execute($data);
+        $res=null;
+        if ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            $res=new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time'],$setup['idU'],$setup['time']);
+        }
+
+        return $res;
     }
 
     public function chercherAthlete($nom)
@@ -293,7 +338,7 @@ class StorageMySQL implements Storage {
 
     public function getActivitesOdered($id)
     {
-        $rq="SELECT * FROM activite WHERE idU= :idU ORDER by activite.date ASC";
+        $rq="SELECT * FROM activite WHERE idU= :idU ORDER by activite.date DESC";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':idU' => $id,

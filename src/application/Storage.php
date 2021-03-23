@@ -31,6 +31,9 @@ interface Storage {
 	public function ajouterAthleteGrp($idG,$idU);
 	public function athleteisInGroupe($id,$idG);
 	public function supprimerAthlete($idU,$idG);
+	public function getCommentaires($id);
+	public function getActivite($id);
+	public function createCommentaire(Commentaire $commentaire);
 }
 
 ?>

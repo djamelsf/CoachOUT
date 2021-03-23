@@ -171,7 +171,7 @@ class GroupeController
                 . ' <img src="' . $athlete->getImageUrl() . '" class="rounded" width="50" height="50"></a>';
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
             $content .= '<p class="card-text">' . $value->getDescription() . '</p>';
-            $content .= '<a href="#" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+            $content .= '<a href="?o=commentaire&a=show&idAc='.$value->getIdAc().'" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
             $content .= '<small class="float-right">5 commentaire(s)</small>';
 
             $content .= '</div> </div>';
@@ -271,14 +271,15 @@ class GroupeController
             $athlete = $this->storage->getUser($value->getIdU());
             $img = $athlete->getImageUrl();
             $nom = $athlete->getPrenom();
+            $nbComments=count($this->storage->getCommentaires($value->getIdAc()));
             $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
             $content .= '<a href="?o=athlete&a=show&id=' . $value->getIdU() . '" class="float-right text-dark" style="text-decoration: none;">' . $nom . '
             <img src="' . $img . '" class="rounded" width="50" height="50"></a>';
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
             $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
             $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
-            $content .= '<a href="#" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
-            $content .= '<small class="float-right">5 commentaire(s)</small>';
+            $content .= '<a href="?o=commentaire&a=show&idAc='.$value->getIdAc().'" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+            $content .= '<small class="float-right">'.$nbComments.' commentaire(s)</small>';
             $content .= ' </div> </div> </div> <br>';
         }
         $content .= '</div> </div>';
