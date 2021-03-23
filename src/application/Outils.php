@@ -19,7 +19,6 @@ class Outils{
         if ($this->autenticationManager->isConnected()) {
             if($this->storage->isCoach($_SESSION['user']['athlete']['id'])){
                 $menu = array(
-                    "Accueil" => '.',
                     "Créer un groupe" =>'?o=groupe&a=nouveauGroupe',
                     "Mes groupes" => '?o=groupe&a=mesGroupes',
                     "Déconnexion" => '?a=deconnexion',
@@ -27,22 +26,18 @@ class Outils{
             }else{
                 if($this->storage->isSportif($_SESSION['user']['athlete']['id'])){
                     $menu = array(
-                        "Accueil" => '.',
-                        "Trouver un groupe" =>'?o=groupe&a=trouverGroupe',
                         "Créer un activite" => '?o=activite&a=nouvelleActivite',
                         "Mes activites" => '?o=activite&a=mesActivites',
                         "Déconnexion" => '?a=deconnexion',
                     );
                 }else{
                     $menu = array(
-                        "Accueil" => '.',
                         "Déconnexion" => '?a=deconnexion',
                     );
                 }
             }
         } else {
             $menu = array(
-                "Accueil" => '.',
                 "Connexion" => 'http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write"',
             );
         }

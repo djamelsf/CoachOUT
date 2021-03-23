@@ -23,7 +23,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href=".">
         <img src="logo.png" width="200" height="30" class="d-inline-block align-top" alt="">
     </a>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -34,13 +34,14 @@
 	}
 ?>
 		</ul>
-
+        <?php if(isset($_SESSION['user'])){ ?>
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="search" placeholder="Chercher un groupe" aria-label="Search" name="mot">
             <input type='hidden' name='o' value='groupe'>
             <input type='hidden' name='a' value='recherche'>
             <button class="btn btn-outline-light my-2 my-sm-0" style="border-color: #fc5200; color: #fc5200;" type="submit">Chercher</button>
         </form>
+        <?php } ?>
     </div>
 	</nav>
 	<main>

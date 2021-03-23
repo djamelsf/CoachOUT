@@ -278,6 +278,9 @@ class GroupeController
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
             $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
             $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
+            $content.='<p class="card-text">Durée :02:00:00</p>';
+            $content.='<p class="card-text">Allure :09:05/Km</p>';
+            $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
             $content .= '<a href="?o=commentaire&a=show&idAc='.$value->getIdAc().'" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
             $content .= '<small class="float-right">'.$nbComments.' commentaire(s)</small>';
             $content .= ' </div> </div> </div> <br>';
