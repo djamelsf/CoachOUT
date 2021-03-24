@@ -167,8 +167,25 @@ class StorageMySQL implements Storage {
         }
     }
 
+    public function isCoachOfGroupe($id)
+    {
+        $rq = "SELECT * FROM groupe WHERE idG= :id AND idU= :idU";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':id' => $id,
+            'idU' => $_SESSION['user']['athlete']['id'],
+        );
+        $stmt->execute($data);
+        $result = $stmt->fetchAll();
+        if (empty($result)) {
+            return 0;
+        }else{
+            return 1;
+        }
+    }
 
-	public function existsAthlete($id){
+
+    public function existsAthlete($id){
         $rq = "SELECT * FROM user WHERE idU= :idU";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
