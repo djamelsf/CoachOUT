@@ -64,27 +64,32 @@ class ActiviteController
      */
     public function nouvelleActivite()
     {
-        $content = '';
-        $content .= '<div class="container"> <h2 class="text-center">Nouvelle activité</h2> <form method="post" action="?o=activite&a=sauverActivite">';
-        $content .= '<div class="form-group"><label>Nom*</label>';
-        $content .= '<input type="text" class="form-control" placeholder="Titre de l\'activité" name="nom" required></div>';
-        $content .= '<div class="form-group"> <label>Description*</label>';
-        $content .= '<textarea class="form-control" rows="3" name="description" required></textarea></div>';
-        $content .= '<div class="form-group"><label>Distance*</label>';
-        $content .= '<input type="number" step="any" class="form-control" placeholder="Distance en kilomètre" name="distance" required></div>';
-        $content .= '<div class="form-row">';
-        $content .= '<div class="form-group col-md-6"><label>Date début de lactivité*</label>';
-        $content .= '<input type="date" class="form-control" name="date" required></div>';
-        $content .= '<div class="form-group col-md-6"><label>Heure début de lactivité*</label>';
-        $content .= '<input type="time" class="form-control" name="heureD" required></div>';
-        $content .= '</div>';
-        $content .= '<div class="form-group">';
-        $content .= '<label>Durée*</label>';
-        $content .= '<input type="time" step="1" class="form-control" name="duree" required>';
-        $content .= '</div>';
-        $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Ajouter</button> </form></div>';
-        $this->view->setPart('title', 'Nouvelle activité');
-        $this->view->setPart('content', $content);
+        if(!$this->autenticationManager->isConnected()){
+            $this->view->setPart('title', 'Nouvelle activité');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
+        }else{
+            $content = '';
+            $content .= '<div class="container"> <h2 class="text-center">Nouvelle activité</h2> <form method="post" action="?o=activite&a=sauverActivite">';
+            $content .= '<div class="form-group"><label>Nom*</label>';
+            $content .= '<input type="text" class="form-control" placeholder="Titre de l\'activité" name="nom" required></div>';
+            $content .= '<div class="form-group"> <label>Description*</label>';
+            $content .= '<textarea class="form-control" rows="3" name="description" required></textarea></div>';
+            $content .= '<div class="form-group"><label>Distance*</label>';
+            $content .= '<input type="number" step="any" class="form-control" placeholder="Distance en kilomètre" name="distance" required></div>';
+            $content .= '<div class="form-row">';
+            $content .= '<div class="form-group col-md-6"><label>Date début de lactivité*</label>';
+            $content .= '<input type="date" class="form-control" name="date" required></div>';
+            $content .= '<div class="form-group col-md-6"><label>Heure début de lactivité*</label>';
+            $content .= '<input type="time" class="form-control" name="heureD" required></div>';
+            $content .= '</div>';
+            $content .= '<div class="form-group">';
+            $content .= '<label>Durée*</label>';
+            $content .= '<input type="time" step="1" class="form-control" name="duree" required>';
+            $content .= '</div>';
+            $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Ajouter</button> </form></div>';
+            $this->view->setPart('title', 'Nouvelle activité');
+            $this->view->setPart('content', $content);
+        }
     }
 
     /**

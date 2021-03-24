@@ -46,6 +46,11 @@ class Outils{
         return $menu;
     }
 
+    public function forbiddenPage(){
+        $content='<div class="container"> <img style="display: block;margin-left: auto;margin-right: auto;" src="200.gif" alt="forbidden"></div>';
+        return $content;
+    }
+
     public function callAPI($method, $url, $data = false)
     {
         $curl = curl_init();

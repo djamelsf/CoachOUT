@@ -189,7 +189,11 @@ class AthleteController
         $content .= '<h5 class="card-title">' . $athlete->getPrenom() . '</h5>';
         $content .= '<p class="card-text">Totale distance parcourue : ' . $this->storage->getDistanceTotal($id)[0] . ' Km</p>';
         $time = ($this->storage->getDistanceTotal($id)[1]) / 60;
-        $allure = ($time / ($this->storage->getDistanceTotal($id)[0])) * 60;
+        if($this->storage->getDistanceTotal($id)[0] == 0){
+            $allure=0;
+        }else{
+            $allure = ($time / ($this->storage->getDistanceTotal($id)[0])) * 60;
+        }
         $content .= '<p class="card-text">Allure moyenne : ' . date('i:s', $allure) . '/Km</p>';
         $content .= '</div> </div> <div class="col-sm-12"><br>';
         $content .= '<ul class="nav nav-tabs" id="myTab" role="tablist">
