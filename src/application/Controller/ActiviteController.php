@@ -116,7 +116,7 @@ class ActiviteController
             );
             $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/api/v3/activities', json_encode($data_array));
             $response = json_decode($make_call, true);
-            $activite = new Activite($response['id'], $response['name'], $response['description'], $response['distance'] / 1000, $response['start_date_local'], $response['elapsed_time'], $_SESSION['user']['athlete']['id'], date('Y-m-d H:i:s'));
+            $activite = new Activite($response['id'], htmlspecialchars($response['name']), htmlspecialchars($response['description']), $response['distance'] / 1000, $response['start_date_local'], $response['elapsed_time'], $_SESSION['user']['athlete']['id'], date('Y-m-d H:i:s'));
             $this->storage->createActivite($activite);
             $this->outils->POSTredirect('.', 'Activité crée');
         }else{

@@ -41,6 +41,7 @@ interface Storage {
 	public function getDistanceTotal($id);
 	public function isCoachOfGroupe($id);
 	public function isMyActivite($id);
+	public function getAthleteGroupes();
 }
 
 ?>

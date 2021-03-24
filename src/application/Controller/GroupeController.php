@@ -74,7 +74,7 @@ class GroupeController
     public function sauverGroupe()
     {
         if ($this->storage->isCoach($_SESSION['user']['athlete']['id'])) {
-            $groupe = new Groupe($_POST['nom'], $_POST['description'], $_SESSION['user']['athlete']['id']);
+            $groupe = new Groupe(htmlspecialchars($_POST['nom']), htmlspecialchars($_POST['description']), $_SESSION['user']['athlete']['id']);
             $this->storage->createGroupe($groupe);
             $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Groupe crée');
         }else{
@@ -480,6 +480,35 @@ class GroupeController
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
 
+    }
+
+    /**
+     * liste des groupes d'un athlète
+     */
+    public function groupes(){
+        if ($this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
+            $title = "Mes groupes";
+            $res = $this->storage->getAthleteGroupes();
+            $content = '<div class="container"> <h2 class="text-center">Mes groupes</h2> <div class="col">';
+            foreach ($res as $key => $value) {
+                $number = count($this->storage->getGroupeMembres($key));
+                $coach = $this->storage->getUser($value->getIdU());
+                $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
+                $content .= '<a href="" class="float-right text-dark" style="text-decoration: none;">' . $coach->getPrenom() . '
+            <img src="' . $coach->getImageUrl() . '" class="rounded" width="50" height="50"></a>';
+                $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
+                $content .= '<p class="card-text">' . $value->getDescription() . '</p>';
+                $content .= '<a href="?o=groupe&a=show&id=' . $key . '" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Voir</a>';
+                $content .= '<small class="float-right">' . $number . ' membre</small>';
+                $content .= ' </div></div> </div> <br>';
+            }
+            $content .= '</div></div>';
+            $this->view->setPart('title', $title);
+            $this->view->setPart('content', $content);
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
     }
 
 

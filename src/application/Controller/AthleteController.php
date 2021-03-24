@@ -157,7 +157,7 @@ class AthleteController
     public function inscriptionAthlete()
     {
         if ($this->autenticationManager->isConnected()){
-            if (!$this->storage->isCoach() && !$this->storage->isSportif()){
+            if (!$this->storage->isCoach($_SESSION['user']['athlete']['id']) && !$this->storage->isSportif($_SESSION['user']['athlete']['id'])){
                 $content = '';
                 $content .= '<form method="post" action="?a=sauverInscription">';
                 $content .= '<p>etes vous un coach ou un sportif ?</p>';
@@ -182,7 +182,7 @@ class AthleteController
     public function sauverInscription()
     {
         if ($this->autenticationManager->isConnected()) {
-            if (!$this->storage->isCoach() && !$this->storage->isSportif()) {
+            if (!$this->storage->isCoach($_SESSION['user']['athlete']['id']) && !$this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
                 $a = $this->getAthlete();
                 $athlete = new Athlete($a['id'], $a['lastname'], $a['firstname'], $a['weight'], $_POST['type'], $a['profile_medium']);
                 $this->storage->createAthlete($athlete);

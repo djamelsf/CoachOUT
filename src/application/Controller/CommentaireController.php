@@ -67,7 +67,7 @@ class CommentaireController
             $idAc = $this->request->getGetParam('idAc');
             $activite = $this->storage->getActivite($idAc);
             if (!empty($_POST)) {
-                $commentaire = new Commentaire($_POST['texte'], date('Y-m-d H:i:s'), $_SESSION['user']['athlete']['id'], $idAc);
+                $commentaire = new Commentaire(htmlspecialchars($_POST['texte']), date('Y-m-d H:i:s'), $_SESSION['user']['athlete']['id'], $idAc);
                 $this->storage->createCommentaire($commentaire);
                 $this->outils->POSTredirect('?o=commentaire&a=show&idAc=' . $idAc, 'Message envoyé');
             }

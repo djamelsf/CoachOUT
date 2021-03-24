@@ -28,7 +28,7 @@ class Outils{
                     $menu = array(
                         "Créer un activite" => '?o=activite&a=nouvelleActivite',
                         "Mes activites" => '?o=activite&a=mesActivites',
-                        "Mes groupes" => '#',
+                        "Mes groupes" => '?o=groupe&a=groupes',
                         "Tous les groupes" => '?mot=&o=groupe&a=recherche',
                         "Déconnexion(".$_SESSION['user']['athlete']['firstname'].")" => '?a=deconnexion',
                     );

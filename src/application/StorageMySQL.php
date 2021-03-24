@@ -326,6 +326,22 @@ class StorageMySQL implements Storage {
         return $tab;
     }
 
+    public function getAthleteGroupes()
+    {
+        $rq="SELECT * FROM adhere,groupe WHERE adhere.idU= :id AND groupe.idG=adhere.idG";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':id' => $_SESSION['user']['athlete']['id'],
+        );
+        $stmt->execute($data);
+        $tab=[];
+        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
+            $tab[$setup['idG']]=new Groupe($setup['nom'],$setup['description'],$setup['idU']);
+        }
+
+        return $tab;
+    }
+
     public function getCommentaires($id)
     {
         $rq = "SELECT * FROM commentaire WHERE idAc= :id ORDER BY (commentaire.date) DESC";
