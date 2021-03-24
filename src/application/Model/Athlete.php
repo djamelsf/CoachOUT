@@ -1,6 +1,6 @@
 <?php
-namespace Djs\Application;
-/* Représente un poème. */
+namespace Djs\Application\Model;
+
 class Athlete {
 
 	protected $idU;

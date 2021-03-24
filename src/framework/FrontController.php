@@ -38,7 +38,7 @@ class FrontController
     {
         $feedback = key_exists('feedback', $_SESSION) ? $_SESSION['feedback'] : '';
         $_SESSION['feedback'] = '';
-    	$view = new View('application/templates/template.php',$feedback);
+    	$view = new View('Application/templates/template.php',$feedback);
    	
         // demander au Router la classe et l'action à exécuter
         $router = new Router($this->request);

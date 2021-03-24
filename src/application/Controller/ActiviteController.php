@@ -1,12 +1,14 @@
 <?php
 
-namespace Djs\Application;
+namespace Djs\Application\Controller;
 
 use Djs\Application\AutenticationManager;
 use Djs\Application\Storage;
 use Djs\Framework\Request;
 use Djs\Framework\Response;
 use Djs\Framework\View;
+use Djs\Application\Outils;
+use Djs\Application\Model\Activite;
 
 class ActiviteController
 {

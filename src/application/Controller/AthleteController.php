@@ -1,10 +1,13 @@
 <?php
-
-namespace Djs\Application;
+namespace Djs\Application\Controller;
 
 use Djs\Framework\Request;
 use Djs\Framework\Response;
 use Djs\Framework\View;
+use Djs\Application\AutenticationManager;
+use Djs\Application\Storage;
+use Djs\Application\Outils;
+use Djs\Application\Model\Athlete;
 
 class AthleteController
 {
@@ -66,7 +69,7 @@ class AthleteController
         $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/oauth/token', json_encode($data_array));
         $response = json_decode($make_call, true);
         $_SESSION['user'] = $response;
-        $this->outils->POSTredirect(".", "HELLO");
+        $this->outils->POSTredirect(".", "bonjour");
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Djs\Application;
+namespace Djs\Application\Model;
 
 class Groupe{
     protected $nom;

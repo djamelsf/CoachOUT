@@ -34,25 +34,25 @@ class Router
         // Regarder quel contrôleur instancier
         switch ($package) {
             case 'athlete':
-                $this->controllerClassName = 'Djs\Application\AthleteController';
+                $this->controllerClassName = 'Djs\Application\Controller\AthleteController';
                 break;
 
             case 'activite':
-                $this->controllerClassName = 'Djs\Application\ActiviteController';
+                $this->controllerClassName = 'Djs\Application\Controller\ActiviteController';
                 break;
 
             case 'groupe':
-                $this->controllerClassName = 'Djs\Application\GroupeController';
+                $this->controllerClassName = 'Djs\Application\Controller\GroupeController';
                 break;
             case 'commentaire':
-                $this->controllerClassName = 'Djs\Application\CommentaireController';
+                $this->controllerClassName = 'Djs\Application\Controller\CommentaireController';
                 break;
 
 
             default:
                 // idem ici, on peut imaginer un package à utiliser par défaut
                 // j'utilise ArticleController pour l'instant car c'est le seul existant
-                $this->controllerClassName = 'Djs\Application\AthleteController';
+                $this->controllerClassName = 'Djs\Application\Controller\AthleteController';
         }
 
         // tester si la classe à instancier existe bien. Si non lancer une Exception.

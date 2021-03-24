@@ -1,5 +1,9 @@
 <?php
 namespace Djs\Application;
+use Djs\Application\Model\Activite;
+use Djs\Application\Model\Athlete;
+use Djs\Application\Model\Commentaire;
+use Djs\Application\Model\Groupe;
 
 interface Storage {
 	/* Renvoie l'instance de Athlete correspondant à l'identifiant donné,
