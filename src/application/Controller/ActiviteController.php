@@ -46,10 +46,16 @@ class ActiviteController
      */
     public function execute($action)
     {
-        if (method_exists($this, $action)) {
-            $this->$action();
-        } else {
-            echo "wrong function";
+        if ($this->autenticationManager->isConnected()) {
+            if (method_exists($this, $action)) {
+                $this->$action();
+            } else {
+                $this->view->setPart('title','Forbidden page');
+                $this->view->setPart('content',$this->outils->forbiddenPage());
+            }
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
         }
 
     }
@@ -64,7 +70,7 @@ class ActiviteController
      */
     public function nouvelleActivite()
     {
-        if(!$this->autenticationManager->isConnected()){
+        if(!$this->storage->isSportif($_SESSION['user']['athlete']['id'])){
             $this->view->setPart('title', 'Nouvelle activité');
             $this->view->setPart('content', $this->outils->forbiddenPage());
         }else{
@@ -97,21 +103,26 @@ class ActiviteController
      */
     public function sauverActivite()
     {
-        $elapsed_time = strtotime($_POST['duree']) - strtotime('TODAY');
-        $data_array = array(
-            "access_token" => $_SESSION['user']['access_token'],
-            "name" => $_POST['nom'],
-            "type" => "run",
-            "start_date_local" => $_POST['date'] . "T" . $_POST['heureD'],
-            "elapsed_time" => $elapsed_time,
-            "description" => $_POST['description'],
-            "distance" => $_POST['distance'] * 1000,
-        );
-        $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/api/v3/activities', json_encode($data_array));
-        $response = json_decode($make_call, true);
-        $activite = new Activite($response['id'], $response['name'], $response['description'], $response['distance'] / 1000, $response['start_date_local'], $response['elapsed_time'], $_SESSION['user']['athlete']['id'], date('Y-m-d H:i:s'));
-        $this->storage->createActivite($activite);
-        $this->outils->POSTredirect('.', 'Activité crée');
+        if($this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
+            $elapsed_time = strtotime($_POST['duree']) - strtotime('TODAY');
+            $data_array = array(
+                "access_token" => $_SESSION['user']['access_token'],
+                "name" => $_POST['nom'],
+                "type" => "run",
+                "start_date_local" => $_POST['date'] . "T" . $_POST['heureD'],
+                "elapsed_time" => $elapsed_time,
+                "description" => $_POST['description'],
+                "distance" => $_POST['distance'] * 1000,
+            );
+            $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/api/v3/activities', json_encode($data_array));
+            $response = json_decode($make_call, true);
+            $activite = new Activite($response['id'], $response['name'], $response['description'], $response['distance'] / 1000, $response['start_date_local'], $response['elapsed_time'], $_SESSION['user']['athlete']['id'], date('Y-m-d H:i:s'));
+            $this->storage->createActivite($activite);
+            $this->outils->POSTredirect('.', 'Activité crée');
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
     }
 
     /**
@@ -119,28 +130,33 @@ class ActiviteController
      */
     public function mesActivites()
     {
-        $res = $this->storage->getMyActivites($_SESSION['user']['athlete']['id']);
-        $title = "Mes activités";
-        $content = '<div class="container"> <h2 class="text-center">Mes activités</h2> <div class="col">';
-        foreach ($res as $key => $value) {
-            $time = ($value->getElapsedTime()) / 60;
-            $allure = ($time / ($value->getDistance())) * 60;
-            $nbComments = count($this->storage->getCommentaires($value->getIdAc()));
-            $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
-            $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
-            $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
-            $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
-            $content .= '<p class="card-text">Durée :' . date('H:i:s', $value->getElapsedTime()) . '</p>';
-            $content .= '<p class="card-text">Allure :' . date('i:s', $allure) . '/Km</p>';
-            $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
-            $content .= '<a href="?o=commentaire&a=show&idAc=' . $value->getIdAc() . '" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
-            $content .= '<a href="?o=activite&a=supprimer&id=' . $value->getIdAC() . '" class="btn btn-danger">Supprimer</a>';
-            $content .= '<small class="float-right">' . $nbComments . ' commentaire(s)</small>';
-            $content .= ' </div></div> </div> <br>';
+        if($this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
+            $res = $this->storage->getMyActivites($_SESSION['user']['athlete']['id']);
+            $title = "Mes activités";
+            $content = '<div class="container"> <h2 class="text-center">Mes activités</h2> <div class="col">';
+            foreach ($res as $key => $value) {
+                $time = ($value->getElapsedTime()) / 60;
+                $allure = ($time / ($value->getDistance())) * 60;
+                $nbComments = count($this->storage->getCommentaires($value->getIdAc()));
+                $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
+                $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
+                $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
+                $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
+                $content .= '<p class="card-text">Durée :' . date('H:i:s', $value->getElapsedTime()) . '</p>';
+                $content .= '<p class="card-text">Allure :' . date('i:s', $allure) . '/Km</p>';
+                $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
+                $content .= '<a href="?o=commentaire&a=show&idAc=' . $value->getIdAc() . '" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+                $content .= '<a href="?o=activite&a=supprimer&id=' . $value->getIdAC() . '" class="btn btn-danger">Supprimer</a>';
+                $content .= '<small class="float-right">' . $nbComments . ' commentaire(s)</small>';
+                $content .= ' </div></div> </div> <br>';
+            }
+            $content .= '</div></div>';
+            $this->view->setPart('title', $title);
+            $this->view->setPart('content', $content);
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
         }
-        $content .= '</div></div>';
-        $this->view->setPart('title', $title);
-        $this->view->setPart('content', $content);
     }
 
     /**
@@ -148,16 +164,21 @@ class ActiviteController
      */
     public function supprimer()
     {
-        $title = 'Suppresion';
-        $id = $this->request->getGetParam('id');
-        $content = '<form class="container" method="post" action="?o=activite&a=confirSuppr&id=' . $id . '"> <h5>Voulez vous supprimer cette activité ?</h5>';
-        $content .= "Oui<input type='radio' name='ouiNon' value='oui' required>";
-        $content .= "<br>Non<input type='radio' name='ouiNon' value='non'>";
-        $content .= '<div class="form-group row"><div class="col-sm-10">';
-        $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color:#fc5200; ">Confirmer</button>';
-        $content .= '</div></div></form>';
-        $this->view->setPart('title', $title);
-        $this->view->setPart('content', $content);
+        if ($this->storage->isMyActivite($this->request->getGetParam('id'))) {
+            $title = 'Suppresion';
+            $id = $this->request->getGetParam('id');
+            $content = '<form class="container" method="post" action="?o=activite&a=confirSuppr&id=' . $id . '"> <h5>Voulez vous supprimer cette activité ?</h5>';
+            $content .= "Oui<input type='radio' name='ouiNon' value='oui' required>";
+            $content .= "<br>Non<input type='radio' name='ouiNon' value='non'>";
+            $content .= '<div class="form-group row"><div class="col-sm-10">';
+            $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color:#fc5200; ">Confirmer</button>';
+            $content .= '</div></div></form>';
+            $this->view->setPart('title', $title);
+            $this->view->setPart('content', $content);
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
     }
 
     /**
@@ -165,9 +186,16 @@ class ActiviteController
      */
     public function confirSuppr()
     {
-        if ($_POST['ouiNon'] == 'oui') {
-            $this->storage->supprimerActivite($this->request->getGetParam('id'));
-            $this->outils->POSTredirect('.', 'Activité supprimée');
+        if ($this->storage->isMyActivite($this->request->getGetParam('id'))) {
+            if ($_POST['ouiNon'] == 'oui') {
+                $this->storage->supprimerActivite($this->request->getGetParam('id'));
+                $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité supprimée');
+            }else{
+                $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité non supprimée');
+            }
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
         }
     }
 

@@ -41,7 +41,8 @@ class AthleteController
         if (method_exists($this, $action)) {
             $this->$action();
         } else {
-            echo "wrong function";
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
         }
 
     }
@@ -51,8 +52,13 @@ class AthleteController
      */
     public function deconnexion()
     {
-        $this->autenticationManager->deconnexion();
-        $this->outils->POSTredirect(".", "Déconnecté");
+        if ($this->autenticationManager->isConnected()) {
+            $this->autenticationManager->deconnexion();
+            $this->outils->POSTredirect(".", "Déconnecté");
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
     }
 
     /**
@@ -60,16 +66,21 @@ class AthleteController
      */
     public function Oauth()
     {
-        $data_array = array(
-            "client_id" => 58487,
-            "client_secret" => "94de0c61163e535a4343e5f517bc1cdc073d06f7",
-            "code" => $this->request->getGetParam('code'),
-            "grant_type" => "authorization_code",
-        );
-        $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/oauth/token', json_encode($data_array));
-        $response = json_decode($make_call, true);
-        $_SESSION['user'] = $response;
-        $this->outils->POSTredirect(".", "bonjour");
+        if (!$this->autenticationManager->isConnected()) {
+            $data_array = array(
+                "client_id" => 58487,
+                "client_secret" => "94de0c61163e535a4343e5f517bc1cdc073d06f7",
+                "code" => $this->request->getGetParam('code'),
+                "grant_type" => "authorization_code",
+            );
+            $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/oauth/token', json_encode($data_array));
+            $response = json_decode($make_call, true);
+            $_SESSION['user'] = $response;
+            $this->outils->POSTredirect(".", "bonjour");
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
     }
 
     /**
@@ -145,19 +156,24 @@ class AthleteController
      */
     public function inscriptionAthlete()
     {
-        $content = '';
-        $content .= '<form method="post" action="?a=sauverInscription">';
-        $content .= '<p>etes vous un coach ou un sportif ?</p>';
-        $content .= '<input name="nom" type="text" value="' . $_SESSION['user']['athlete']['firstname'] . '" disabled>';
-        $content .= '<input name="prenom" type="text" value="' . $_SESSION['user']['athlete']['lastname'] . '" disabled>';
-        $content .= 'Coach ou Sportif ? <select name="type" required>';
-        $content .= '<option value="coach">Coach</option>';
-        $content .= '<option value="sportif">Sportif</option>';
-        $content .= '</select>';
-        $content .= '<input type="submit">';
-        $content .= '</form>';
-        $this->view->setPart('title', 'Inscription');
-        $this->view->setPart('content', $content);
+        if ($this->autenticationManager->isConnected()){
+            if (!$this->storage->isCoach() && !$this->storage->isSportif()){
+                $content = '';
+                $content .= '<form method="post" action="?a=sauverInscription">';
+                $content .= '<p>etes vous un coach ou un sportif ?</p>';
+                $content .= '<input name="nom" type="text" value="' . $_SESSION['user']['athlete']['firstname'] . '" disabled>';
+                $content .= '<input name="prenom" type="text" value="' . $_SESSION['user']['athlete']['lastname'] . '" disabled>';
+                $content .= 'Coach ou Sportif ? <select name="type" required>';
+                $content .= '<option value="coach">Coach</option>';
+                $content .= '<option value="sportif">Sportif</option>';
+                $content .= '</select>';
+                $content .= '<input type="submit">';
+                $content .= '</form>';
+                $this->view->setPart('title', 'Inscription');
+                $this->view->setPart('content', $content);
+            }
+        }
+
     }
 
     /**
@@ -165,10 +181,14 @@ class AthleteController
      */
     public function sauverInscription()
     {
-        $a = $this->getAthlete();
-        $athlete = new Athlete($a['id'], $a['lastname'], $a['firstname'], $a['weight'], $_POST['type'], $a['profile_medium']);
-        $this->storage->createAthlete($athlete);
-        $this->outils->POSTredirect('.', 'Inscription faite');
+        if ($this->autenticationManager->isConnected()) {
+            if (!$this->storage->isCoach() && !$this->storage->isSportif()) {
+                $a = $this->getAthlete();
+                $athlete = new Athlete($a['id'], $a['lastname'], $a['firstname'], $a['weight'], $_POST['type'], $a['profile_medium']);
+                $this->storage->createAthlete($athlete);
+                $this->outils->POSTredirect('.', 'Inscription faite');
+            }
+        }
 
     }
 
@@ -177,26 +197,27 @@ class AthleteController
      */
     public function show()
     {
-        $id = $this->request->getGetParam('id');
-        $athlete = $this->storage->getUser($id);
-        $tab = $this->storage->getActivitesOdered($id);
-        $labels = $tab[0];
-        $data = $tab[1];
-        $title = "Page de " . $athlete->getPrenom();
-        $content = '<div class="container"><div class="row"> <div class="col-sm-12">';
-        $content .= '<img src="' . $athlete->getImageUrl() . '" width="200" height="200" class="float-left">';
-        $content .= '<div class="card-body float-left">';
-        $content .= '<h5 class="card-title">' . $athlete->getPrenom() . '</h5>';
-        $content .= '<p class="card-text">Totale distance parcourue : ' . $this->storage->getDistanceTotal($id)[0] . ' Km</p>';
-        $time = ($this->storage->getDistanceTotal($id)[1]) / 60;
-        if($this->storage->getDistanceTotal($id)[0] == 0){
-            $allure=0;
-        }else{
-            $allure = ($time / ($this->storage->getDistanceTotal($id)[0])) * 60;
-        }
-        $content .= '<p class="card-text">Allure moyenne : ' . date('i:s', $allure) . '/Km</p>';
-        $content .= '</div> </div> <div class="col-sm-12"><br>';
-        $content .= '<ul class="nav nav-tabs" id="myTab" role="tablist">
+        if ($this->autenticationManager->isConnected()) {
+            $id = $this->request->getGetParam('id');
+            $athlete = $this->storage->getUser($id);
+            $tab = $this->storage->getActivitesOdered($id);
+            $labels = $tab[0];
+            $data = $tab[1];
+            $title = "Page de " . $athlete->getPrenom();
+            $content = '<div class="container"><div class="row"> <div class="col-sm-12">';
+            $content .= '<img src="' . $athlete->getImageUrl() . '" width="200" height="200" class="float-left">';
+            $content .= '<div class="card-body float-left">';
+            $content .= '<h5 class="card-title">' . $athlete->getPrenom() . '</h5>';
+            $content .= '<p class="card-text">Totale distance parcourue : ' . $this->storage->getDistanceTotal($id)[0] . ' Km</p>';
+            $time = ($this->storage->getDistanceTotal($id)[1]) / 60;
+            if ($this->storage->getDistanceTotal($id)[0] == 0) {
+                $allure = 0;
+            } else {
+                $allure = ($time / ($this->storage->getDistanceTotal($id)[0])) * 60;
+            }
+            $content .= '<p class="card-text">Allure moyenne : ' . date('i:s', $allure) . '/Km</p>';
+            $content .= '</div> </div> <div class="col-sm-12"><br>';
+            $content .= '<ul class="nav nav-tabs" id="myTab" role="tablist">
   <li class="nav-item">
     <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Distance par jour</a>
   </li>
@@ -209,30 +230,30 @@ class AthleteController
   <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab"> <canvas id="myChart"></canvas> </div>
   <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
 ';
-        //listes des activites
-        $activites = $this->storage->getMyActivites($id);
-        foreach ($activites as $key => $value) {
-            $time = ($value->getElapsedTime()) / 60;
-            $allure = ($time / ($value->getDistance())) * 60;
-            $nbComments = count($this->storage->getCommentaires($value->getIdAc()));
-            $content .= '<div class="card"> <div class="card-body">';
-            $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
-            $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
-            $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
-            $content .= '<p class="card-text">Durée :' . date('H:i:s', $value->getElapsedTime()) . '</p>';
-            $content .= '<p class="card-text">Allure :' . date('i:s', $allure) . '/Km</p>';
-            $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
-            $content .= '<a href="?o=commentaire&a=show&idAc=' . $value->getIdAc() . '"  class="btn btn-link" style="color: #fc5200;">Commenter</a>';
-            $content .= '<small class="float-right">' . $nbComments . ' commentaire(s)</small>';
-            $content .= '</div> </div>';
-        }
-        $content .= ' </div> </div>';
-        $content .= "<script src='https://cdn.jsdelivr.net/npm/chart.js@2.8.0'></script>";
-        $content .= "<script type='text/javascript'>";
-        $content .= "var ctx = document.getElementById('myChart').getContext('2d');";
-        $content .= "var chart = new Chart(ctx, {
+            //listes des activites
+            $activites = $this->storage->getMyActivites($id);
+            foreach ($activites as $key => $value) {
+                $time = ($value->getElapsedTime()) / 60;
+                $allure = ($time / ($value->getDistance())) * 60;
+                $nbComments = count($this->storage->getCommentaires($value->getIdAc()));
+                $content .= '<div class="card"> <div class="card-body">';
+                $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
+                $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
+                $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
+                $content .= '<p class="card-text">Durée :' . date('H:i:s', $value->getElapsedTime()) . '</p>';
+                $content .= '<p class="card-text">Allure :' . date('i:s', $allure) . '/Km</p>';
+                $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
+                $content .= '<a href="?o=commentaire&a=show&idAc=' . $value->getIdAc() . '"  class="btn btn-link" style="color: #fc5200;">Commenter</a>';
+                $content .= '<small class="float-right">' . $nbComments . ' commentaire(s)</small>';
+                $content .= '</div> </div>';
+            }
+            $content .= ' </div> </div>';
+            $content .= "<script src='https://cdn.jsdelivr.net/npm/chart.js@2.8.0'></script>";
+            $content .= "<script type='text/javascript'>";
+            $content .= "var ctx = document.getElementById('myChart').getContext('2d');";
+            $content .= "var chart = new Chart(ctx, {
         type: 'line',";
-        $content .= "data: {
+            $content .= "data: {
         labels: " . json_encode($labels) . ",
         datasets: [{ 
             data: " . json_encode($data) . ",
@@ -243,10 +264,14 @@ class AthleteController
         ]},
         options: {}
         });";
-        $content .= "</script>";
-        $content .= '</div></div></div>';
-        $this->view->setPart('title', $title);
-        $this->view->setPart('content', $content);
+            $content .= "</script>";
+            $content .= '</div></div></div>';
+            $this->view->setPart('title', $title);
+            $this->view->setPart('content', $content);
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
     }
 
 }

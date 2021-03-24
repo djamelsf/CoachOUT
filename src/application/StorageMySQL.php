@@ -136,6 +136,22 @@ class StorageMySQL implements Storage {
         }
     }
 
+    public function isMyActivite($id)
+    {
+        $rq = "SELECT * FROM activite WHERE idU= :id AND idAc= :idAc";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':id' => $_SESSION['user']['athlete']['id'],
+            ':idAc' => $id,
+        );
+        $stmt->execute($data);
+        $result = $stmt->fetchAll();
+        if (empty($result)) {
+            return 0;
+        }else{
+            return 1;
+        }
+    }
 
     public function isCoach($id){
         $rq = "SELECT * FROM user WHERE idU= :id AND type= 'coach'";
@@ -405,7 +421,7 @@ class StorageMySQL implements Storage {
 
     public function supprimerActivite($id)
     {
-        $rq = "DELETE FROM activite WHERE idAc= :id";
+        $rq = "DELETE FROM commentaire WHERE idAc= :id; DELETE FROM activite WHERE idAc= :id";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':id' => $id,

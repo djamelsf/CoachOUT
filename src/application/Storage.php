@@ -40,6 +40,7 @@ interface Storage {
 	public function createCommentaire(Commentaire $commentaire);
 	public function getDistanceTotal($id);
 	public function isCoachOfGroupe($id);
+	public function isMyActivite($id);
 }
 
 ?>
