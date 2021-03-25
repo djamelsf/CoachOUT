@@ -116,9 +116,14 @@ class ActiviteController
             );
             $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/api/v3/activities', json_encode($data_array));
             $response = json_decode($make_call, true);
-            $activite = new Activite($response['id'], htmlspecialchars($response['name']), htmlspecialchars($response['description']), $response['distance'] / 1000, $response['start_date_local'], $response['elapsed_time'], $_SESSION['user']['athlete']['id'], date('Y-m-d H:i:s'));
-            $this->storage->createActivite($activite);
-            $this->outils->POSTredirect('.', 'Activité crée');
+            print_r($response);
+            if (isset($response['message'])){
+                $this->outils->POSTredirect('?o=activite&a=nouvelleActivite', 'Activité non crée');
+            }else{
+                $activite = new Activite($response['id'], htmlspecialchars($response['name']), htmlspecialchars($response['description']), $response['distance'] / 1000, $response['start_date_local'], $response['elapsed_time'], $_SESSION['user']['athlete']['id'], date('Y-m-d H:i:s'));
+                $this->storage->createActivite($activite);
+                $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité crée');
+            }
         }else{
             $this->view->setPart('title','Forbidden page');
             $this->view->setPart('content',$this->outils->forbiddenPage());

@@ -124,7 +124,7 @@ class AthleteController
     public function makeHomePage()
     {
         $title = "Bienvenue !";
-        $content = "Bienvenue sur STRAVA API.";
+        $content = '<img src="wallpaper.jpg" class="img-fluid" alt="Responsive image">';
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
     }
@@ -158,17 +158,15 @@ class AthleteController
     {
         if ($this->autenticationManager->isConnected()){
             if (!$this->storage->isCoach($_SESSION['user']['athlete']['id']) && !$this->storage->isSportif($_SESSION['user']['athlete']['id'])){
-                $content = '';
-                $content .= '<form method="post" action="?a=sauverInscription">';
-                $content .= '<p>etes vous un coach ou un sportif ?</p>';
-                $content .= '<input name="nom" type="text" value="' . $_SESSION['user']['athlete']['firstname'] . '" disabled>';
-                $content .= '<input name="prenom" type="text" value="' . $_SESSION['user']['athlete']['lastname'] . '" disabled>';
-                $content .= 'Coach ou Sportif ? <select name="type" required>';
-                $content .= '<option value="coach">Coach</option>';
-                $content .= '<option value="sportif">Sportif</option>';
-                $content .= '</select>';
-                $content .= '<input type="submit">';
-                $content .= '</form>';
+                $content = '<br>';
+                $content .= '<p class="text-center">Inscription</p>';
+                $content .= '<h2 class="text-center">Choisissez votre type</h2><br>';
+                $content .= '<div class="container"><div class="row">';
+                $content .= '<a class="col-sm-6" href="?a=sauverInscription&type=coach"><p class="text-center">Entraîneur</p>';
+                $content .= '<img src="coach.png"></a>';
+                $content .= '<a class="col-sm-6" href="?a=sauverInscription&type=sportif"><p class="text-center">athlète</p>';
+                $content .= '<img src="sportsman.png"></a>';
+                $content .= '</div></div>';
                 $this->view->setPart('title', 'Inscription');
                 $this->view->setPart('content', $content);
             }
@@ -184,9 +182,11 @@ class AthleteController
         if ($this->autenticationManager->isConnected()) {
             if (!$this->storage->isCoach($_SESSION['user']['athlete']['id']) && !$this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
                 $a = $this->getAthlete();
-                $athlete = new Athlete($a['id'], $a['lastname'], $a['firstname'], $a['weight'], $_POST['type'], $a['profile_medium']);
-                $this->storage->createAthlete($athlete);
-                $this->outils->POSTredirect('.', 'Inscription faite');
+                if(isset($_GET['type'])) {
+                    $athlete = new Athlete($a['id'], $a['lastname'], $a['firstname'], $a['weight'], $_GET['type'], $a['profile_medium']);
+                    $this->storage->createAthlete($athlete);
+                    $this->outils->POSTredirect('.', 'Inscription faite');
+                }
             }
         }
 
