@@ -526,15 +526,21 @@ class StorageMySQL implements Storage {
         return $c;
     }
 
-
-    public function hydrate($stmt){
-		$tab=[];
-		while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-			$tab[$setup['idU']]=new Athlete($setup['idU'],$setup['nom'],$setup['prenom'],$setup['weight'],$setup['type']);
-		}
-		return $tab;
-	}
-
+    public function modifierActvitie($id, $nom, $description)
+    {
+        $rq = "UPDATE activite SET nom= :nom, description= :description WHERE idAc= :id";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':nom' => $nom,
+            ':description' => $description,
+            ':id' => $id,
+        );
+        if ($stmt->execute($data)) {
+            return true;
+        }else{
+            return false;
+        }
+    }
 
 
 }

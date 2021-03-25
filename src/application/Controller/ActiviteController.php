@@ -99,6 +99,26 @@ class ActiviteController
     }
 
     /**
+     * Formulaire modification Activité
+     */
+    public function modifier(){
+        if ($this->storage->isMyActivite($this->request->getGetParam('id'))) {
+            $activite = $this->storage->getActivite($_GET['id']);
+            $content = '<div class="container"> <h2 class="text-center">Modifier activité</h2> <form method="post" action="?o=activite&a=ConfModification&id='.$_GET['id'].'">';
+            $content .= '<div class="form-group"><label>Nom*</label>';
+            $content .= '<input type="text" class="form-control" placeholder="Titre de l\'activité" value="' . $activite->getNom() . '" name="nom" required></div>';
+            $content .= '<div class="form-group"> <label>Description*</label>';
+            $content .= '<textarea class="form-control" rows="3" name="description" required>' . $activite->getDescription() . '</textarea></div>';
+            $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Modifier</button> </form></div>';
+            $this->view->setPart('title', 'Nouvelle activité');
+            $this->view->setPart('content', $content);
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
+    }
+
+    /**
      * Sauver l'activité inscrite sur le formulaire
      */
     public function sauverActivite()
@@ -131,6 +151,30 @@ class ActiviteController
     }
 
     /**
+     * Modification d'une activité 
+     */
+    public function ConfModification(){
+        if ($this->storage->isMyActivite($this->request->getGetParam('id'))) {
+            $data_array = array(
+                "access_token" => $_SESSION['user']['access_token'],
+                "name" => $_POST['nom'],
+                "description" => $_POST['description'],
+            );
+            $make_call = $this->outils->callAPI('PUT', 'https://www.strava.com/api/v3/activities/'.$_GET['id'], json_encode($data_array));
+            $response = json_decode($make_call, true);
+            if (isset($response['message'])){
+                $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité non modifié');
+            }else{
+                $this->storage->modifierActvitie($_GET['id'],htmlspecialchars($response['name']),htmlspecialchars($response['description']));
+                $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité modifié');
+            }
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
+    }
+
+    /**
      * Afficher les activités de l'athlete authentifié
      */
     public function mesActivites()
@@ -151,7 +195,8 @@ class ActiviteController
                 $content .= '<p class="card-text">Allure :' . date('i:s', $allure) . '/Km</p>';
                 $content .= '<p class="card-text">Date : ' . date('Y-m-d H:i', strtotime($value->getDate())) . '</p>';
                 $content .= '<a href="?o=commentaire&a=show&idAc=' . $value->getIdAc() . '" class="btn btn-link" style="color: #fc5200;">Commenter</a>';
-                $content .= '<a href="?o=activite&a=supprimer&id=' . $value->getIdAC() . '" class="btn btn-danger">Supprimer</a>';
+                $content .= '<a href="?o=activite&a=modifier&id=' . $value->getIdAC() . '" class="btn btn-success">Modifier </a>';
+                $content .= '   <a href="?o=activite&a=supprimer&id=' . $value->getIdAC() . '" class="btn btn-danger">Supprimer</a>';
                 $content .= '<small class="float-right">' . $nbComments . ' commentaire(s)</small>';
                 $content .= ' </div></div> </div> <br>';
             }
