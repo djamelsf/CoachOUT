@@ -43,6 +43,7 @@ interface Storage {
 	public function isMyActivite($id);
 	public function getAthleteGroupes();
 	public function modifierActvitie($id,$nom,$description);
+	public function modifierGroupe($id,$nom,$description);
 }
 
 ?>

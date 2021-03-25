@@ -541,6 +541,21 @@ class StorageMySQL implements Storage {
             return false;
         }
     }
+    public function modifierGroupe($id,$nom,$description)
+    {
+        $rq = "UPDATE groupe SET nom= :nom, description= :description WHERE idG= :id";
+        $stmt = $this->connexion->prepare($rq);
+        $data = array(
+            ':nom' => $nom,
+            ':description' => $description,
+            ':id' => $id,
+        );
+        if ($stmt->execute($data)) {
+            return true;
+        }else{
+            return false;
+        }
+    }
 
 
 }

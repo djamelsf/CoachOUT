@@ -124,7 +124,10 @@ class AthleteController
     public function makeHomePage()
     {
         $title = "Bienvenue !";
-        $content = '<img src="wallpaper.jpg" class="img-fluid" alt="Responsive image">';
+        //$content = '<img src="wallpaper.jpg" class="img-fluid" alt="Responsive image">';
+        $content = "<section> <div class='container-fluid' style='width: 100%; height: 1000px; background-attachment: fixed;
+        background-image: url(coach_w.jpg); background-size: 100% 100%; background-repeat: no-repeat; background-position: cover; overflow: hidden; '>";
+        $content.='</div> </section>';
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
     }
@@ -135,7 +138,8 @@ class AthleteController
     public function makeCoachHomepage()
     {
         $title = "Bienvenue !";
-        $content = "Bienvenue Coach! dans Strava!.";
+        $content = "<section> <div class='container-fluid' style='width: 100%; height: 1000px; background-attachment: fixed;
+        background-image: url(wallpaper1.jpg); background-size: 100% 100%; background-repeat: no-repeat; background-position: cover; overflow: hidden; '></div> </section>";
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
     }
@@ -145,8 +149,10 @@ class AthleteController
      */
     public function makeSportifHomepage()
     {
-        $title = "Bienvenue a toi!";
-        $content = "Bienvenue Sportif! dans Strava!.";
+        $title = "Bienvenue !";
+        $content = "<section> <div class='container-fluid' style='width: 100%; height: 1000px; background-attachment: fixed;
+        background-image: url(wallpaper1.jpg); background-size: 100% 100%; background-repeat: no-repeat; background-position: cover; overflow: hidden; '>";
+        $content.='</div> </section>';
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
     }

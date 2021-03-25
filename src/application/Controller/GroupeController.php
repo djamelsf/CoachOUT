@@ -69,6 +69,38 @@ class GroupeController
     }
 
     /**
+     * Formulaire modification groupe
+     */
+    public function modifier(){
+        if ($this->storage->isCoachOfGroupe($idG = $this->request->getGetParam('id'))) {
+            $groupe=$this->storage->getGroupe($_GET['id']);
+            $content = '<div class="container"> <h2 class="text-center">Modifier groupe</h2>';
+            $content .= '<form method="post" action="?o=groupe&a=confModification&id='.$_GET['id'].'">';
+            $content .= '<div class="form-group"> <label for="inputName">Nom</label>';
+            $content .= '<input type="text" class="form-control" id="inputName" placeholder="Nom du groupe" name="nom" value="'.$groupe->getNom().'" required> </div>';
+            $content .= '<div class="form-group"> <label for="inputName">Description</label>';
+            $content .= '<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="description" required>'.$groupe->getDescription().'</textarea> </div>';
+            $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Modifier</button>';
+            $this->view->setPart('title', 'Modification groupe');
+            $this->view->setPart('content', $content);
+
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
+
+    }
+    public function confModification(){
+        if ($this->storage->isCoachOfGroupe($idG = $this->request->getGetParam('id'))) {
+            $this->storage->modifierGroupe($_GET['id'],htmlspecialchars($_POST['nom']),htmlspecialchars($_POST['description']));
+            $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Groupe modifié');
+        }else{
+            $this->view->setPart('title','Forbidden page');
+            $this->view->setPart('content',$this->outils->forbiddenPage());
+        }
+    }
+
+    /**
      * Enregistrement d'un nouveau groupe avec redirection vers (Mes groupes)
      */
     public function sauverGroupe()
@@ -98,7 +130,8 @@ class GroupeController
                 $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
                 $content .= '<a href="?o=groupe&a=show&id=' . $key . '" ><h5 class="card-title">' . $value->getNom() . '</h5> </a>';
                 $content .= '<p class="card-text">' . $value->getDescription() . '</p>';
-                $content .= '<a href="?o=groupe&a=supprimer&id=' . $key . '" class="btn btn-danger">Supprimer</a>';
+                $content .= '<a href="?o=groupe&a=modifier&id=' . $key . '" class="btn btn-success">Modifier</a>';
+                $content .= ' <a href="?o=groupe&a=supprimer&id=' . $key . '" class="btn btn-danger">Supprimer</a>';
                 $content .= '<small class="float-right">' . $number . ' membre</small>';
                 $content .= ' </div></div> </div> <br>';
             }

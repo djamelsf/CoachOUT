@@ -151,7 +151,7 @@ class ActiviteController
     }
 
     /**
-     * Modification d'une activité 
+     * Modification d'une activité
      */
     public function ConfModification(){
         if ($this->storage->isMyActivite($this->request->getGetParam('id'))) {
