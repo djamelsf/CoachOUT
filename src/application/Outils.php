@@ -40,7 +40,7 @@ class Outils{
             }
         } else {
             $menu = array(
-                "Connexion via STRAVA" => 'http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write"',
+                "Connexion via STRAVA" => 'http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write',
             );
         }
         return $menu;

@@ -127,6 +127,7 @@ class AthleteController
         //$content = '<img src="wallpaper.jpg" class="img-fluid" alt="Responsive image">';
         $content = "<section> <div class='container-fluid' style='width: 100%; height: 1000px; background-attachment: fixed;
         background-image: url(coach_w.jpg); background-size: 100% 100%; background-repeat: no-repeat; background-position: cover; overflow: hidden; '>";
+        $content .= '<div class="card container" style="width: 18rem; margin-top: 20%;"><a href="http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write" class="btn btn-light">Connexion via <img src="strava.png" width="40" height="40"></a></div>';
         $content.='</div> </section>';
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
