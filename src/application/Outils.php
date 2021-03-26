@@ -26,6 +26,7 @@ class Outils{
             }else{
                 if($this->storage->isSportif($_SESSION['user']['athlete']['id'])){
                     $menu = array(
+                        "Profil" => '?o=athlete&a=show&id='.$_SESSION['user']['athlete']['id'],
                         "Créer un activite" => '?o=activite&a=nouvelleActivite',
                         "Mes activites" => '?o=activite&a=mesActivites',
                         "Mes groupes" => '?o=groupe&a=groupes',

@@ -214,7 +214,9 @@ class GroupeController
         if ($this->storage->isInGroupe($this->request->getGetParam('id'))) {
             if ($_POST['ouiNon'] == 'oui') {
                 $this->storage->quitterGroupe($this->request->getGetParam('id'));
-                $this->outils->POSTredirect('.', 'Vous avez quitté un groupe');
+                $this->outils->POSTredirect('?o=groupe&a=groupes', 'Vous avez quitté un groupe');
+            }else{
+                $this->outils->POSTredirect('?o=groupe&a=groupes', 'Action annulée');
             }
         }else{
             $this->view->setPart('title','Forbidden page');
