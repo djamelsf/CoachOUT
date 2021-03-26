@@ -127,7 +127,7 @@ class AthleteController
         //$content = '<img src="wallpaper.jpg" class="img-fluid" alt="Responsive image">';
         $content = "<section> <div class='container-fluid' style='width: 100%; height: 1000px; background-attachment: fixed;
         background-image: url(coach_w.jpg); background-size: 100% 100%; background-repeat: no-repeat; background-position: cover; overflow: hidden; '>";
-        $content .= '<div class="card container" style="width: 18rem; margin-top: 20%;"><a href="http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write" class="btn btn-light">Connexion via <img src="strava.png" width="40" height="40"></a></div>';
+        $content .= '<div class="card container" style="width: 18rem; margin-top: 20%;"><a href="http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write" class="btn btn-light">Connexion via <img src="strava.png" width="40" height="40" alt="strava"></a></div>';
         $content.='</div> </section>';
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
@@ -170,9 +170,9 @@ class AthleteController
                 $content .= '<h2 class="text-center">Choisissez votre type</h2><br>';
                 $content .= '<div class="container"><div class="row">';
                 $content .= '<a class="col-sm-6" href="?a=sauverInscription&type=coach"><p class="text-center">Entraîneur</p>';
-                $content .= '<img src="coach.png"></a>';
+                $content .= '<img src="coach.png" alt="img coach"></a>';
                 $content .= '<a class="col-sm-6" href="?a=sauverInscription&type=sportif"><p class="text-center">athlète</p>';
-                $content .= '<img src="sportsman.png"></a>';
+                $content .= '<img src="sportsman.png" alt="sportman"></a>';
                 $content .= '</div></div>';
                 $this->view->setPart('title', 'Inscription');
                 $this->view->setPart('content', $content);
@@ -212,7 +212,7 @@ class AthleteController
             $data = $tab[1];
             $title = "Page de " . $athlete->getPrenom();
             $content = '<div class="container"><div class="row"> <div class="col-sm-12">';
-            $content .= '<img src="' . $athlete->getImageUrl() . '" width="200" height="200" class="float-left">';
+            $content .= '<img src="' . $athlete->getImageUrl() . '" width="200" height="200" class="float-left" alt="profil image">';
             $content .= '<div class="card-body float-left">';
             $content .= '<h5 class="card-title">' . $athlete->getPrenom() . '</h5>';
             $content .= '<p class="card-text">Totale distance parcourue : ' . $this->storage->getDistanceTotal($id)[0] . ' Km</p>';

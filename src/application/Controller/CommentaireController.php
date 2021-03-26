@@ -95,7 +95,7 @@ class CommentaireController
             foreach ($commentaires as $key => $value) {
                 $user = $this->storage->getUser($value->getIdu());
                 $content .= '<div class="card"><div class="card-body">';
-                $content .= '<a href="?o=athlete&a=show&id=' . $user->getIdU() . '"><img src="' . $user->getImageUrl() . '"  class="float-left" width="30" height="30"> </a>';
+                $content .= '<a href="?o=athlete&a=show&id=' . $user->getIdU() . '"><img src="' . $user->getImageUrl() . '"  class="float-left" width="30" height="30" alt="image profil"> </a>';
                 $content .= '<h5 class="card-title"> ' . $user->getPrenom() . '</h5>';
                 $content .= '<br><p class="card-text">' . $value->getTexte() . '</p>';
                 $content .= '<small class="float-right">' . $value->getDate() . '</small>';

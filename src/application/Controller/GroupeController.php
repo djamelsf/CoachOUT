@@ -267,7 +267,7 @@ class GroupeController
             $content .= '<div class="card">';
             $content .= '<div class="card-body">';
             $content .= ' <a href="?o=athlete&a=show&id=' . $value->getIdU() . '" class="float-right text-dark" style="text-decoration: none;">' . $athlete->getPrenom()
-                . ' <img src="' . $athlete->getImageUrl() . '" class="rounded" width="50" height="50"></a>';
+                . ' <img src="' . $athlete->getImageUrl() . '" class="rounded" width="50" height="50" alt="image athlete"></a>';
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
             $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
             $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
@@ -285,11 +285,11 @@ class GroupeController
         $content .= '<p class="text-center">Membres</p>';
         $content .= '<div class="card">';
         $content .= '<ul class="list-group list-group-flush">';
-        $content .= '<li class="list-group-item" style="background-color: gold;"> <img src="' . $coach->getImageUrl() . '" class="rounded" width="30" height="30"> ' . $coach->getNom() . ' <small style="color: #fc5200;">Coach</small> </li>';
+        $content .= '<li class="list-group-item" style="background-color: gold;"> <img src="' . $coach->getImageUrl() . '" class="rounded" alt="athlete img" width="30" height="30"> ' . $coach->getNom() . ' <small style="color: #fc5200;">Coach</small> </li>';
         $ids = $this->storage->getGroupeMembres($id);
         foreach ($ids as $key => $value) {
             $user = $this->storage->getUser($value);
-            $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
+            $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" alt="image" width="30" height="30">' . $user->getPrenom() . '</li>';
 
         }
         $content .= '</ul>';
@@ -321,11 +321,11 @@ class GroupeController
         $content .= '<p class="text-center">Membres</p>';
         $content .= '<div class="card">';
         $content .= '<ul class="list-group list-group-flush">';
-        $content .= '<li class="list-group-item" style="background-color: gold;"> <img src="' . $coach->getImageUrl() . '" class="rounded" width="30" height="30"> ' . $coach->getNom() . ' <small style="color: #fc5200;">Coach</small> </li>';
+        $content .= '<li class="list-group-item" style="background-color: gold;"> <img src="' . $coach->getImageUrl() . '" class="rounded" alt="image" width="30" height="30"> ' . $coach->getNom() . ' <small style="color: #fc5200;">Coach</small> </li>';
         $ids = $this->storage->getGroupeMembres($id);
         foreach ($ids as $key => $value) {
             $user = $this->storage->getUser($value);
-            $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
+            $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" alt="image" width="30" height="30">' . $user->getPrenom() . '</li>';
 
         }
         $content .= '</ul>';
@@ -358,7 +358,7 @@ class GroupeController
                 $nbComments = count($this->storage->getCommentaires($value->getIdAc()));
                 $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
                 $content .= '<a href="?o=athlete&a=show&id=' . $value->getIdU() . '" class="float-right text-dark" style="text-decoration: none;">' . $nom . '
-            <img src="' . $img . '" class="rounded" width="50" height="50"></a>';
+            <img src="' . $img . '" class="rounded" alt="image" width="50" height="50"></a>';
                 $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
                 $content .= '<p class="card-text">Description : ' . $value->getDescription() . '</p>';
                 $content .= '<p class="card-text">Distance : ' . $value->getDistance() . ' Km</p>';
@@ -375,7 +375,7 @@ class GroupeController
             $ids = $this->storage->getGroupeMembres($id);
             foreach ($ids as $key => $value) {
                 $user = $this->storage->getUser($value);
-                $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" width="30" height="30">' . $user->getPrenom() . '</li>';
+                $content .= '<li class="list-group-item"> <img src="' . $user->getImageUrl() . '" class="rounded" alt="image" width="30" height="30">' . $user->getPrenom() . '</li>';
             }
             $content .= '</ul> <a href="?o=groupe&a=inviter&id=' . $id . '" style="background-color: #fc5200; border-color: #fc5200;" class="btn btn-primary">Inviter/Supprimer un athlète</a> </div> </div> </div>';
             $this->view->setPart('title', $title);
@@ -434,7 +434,7 @@ class GroupeController
                 $content .= '<div class="col-sm-12">';
                 $content .= '<div class="card">';
                 $content .= '<div class="card-body">';
-                $content .= '<a href="?o=athlete&a=show&id=' . $value->getIdU() . '"><img src="' . $value->getImageUrl() . '" class="float-right" width="50" height="50"> </a>';
+                $content .= '<a href="?o=athlete&a=show&id=' . $value->getIdU() . '"><img src="' . $value->getImageUrl() . '" class="float-right" alt="image" width="50" height="50"> </a>';
                 $content .= '<h5 class="card-title">' . $value->getPrenom() . ' ' . $value->getNom() . '</h5>';
                 if ($this->storage->athleteisInGroupe($value->getIdU(), $id)) {
                     $content .= '<a href="?o=groupe&a=supprAt&idG=' . $id . '&idU=' . $value->getIdU() . '" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Supprimer</a>';
@@ -502,7 +502,7 @@ class GroupeController
             $coach = $this->storage->getUser($value->getIdU());
             $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
             $content .= '<a href="" class="float-right text-dark" style="text-decoration: none;">' . $coach->getPrenom() . '
-            <img src="' . $coach->getImageUrl() . '" class="rounded" width="50" height="50"></a>';
+            <img src="' . $coach->getImageUrl() . '" class="rounded" alt="image" width="50" height="50"></a>';
             $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
             $content .= '<p class="card-text">' . $value->getDescription() . '</p>';
             $content .= '<a href="?o=groupe&a=show&id=' . $key . '" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Voir</a>';
@@ -528,7 +528,7 @@ class GroupeController
                 $coach = $this->storage->getUser($value->getIdU());
                 $content .= '<div class="col-sm-12"> <div class="card"> <div class="card-body">';
                 $content .= '<a href="" class="float-right text-dark" style="text-decoration: none;">' . $coach->getPrenom() . '
-            <img src="' . $coach->getImageUrl() . '" class="rounded" width="50" height="50"></a>';
+            <img src="' . $coach->getImageUrl() . '" class="rounded" alt="image" width="50" height="50"></a>';
                 $content .= '<h5 class="card-title">' . $value->getNom() . '</h5>';
                 $content .= '<p class="card-text">' . $value->getDescription() . '</p>';
                 $content .= '<a href="?o=groupe&a=show&id=' . $key . '" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Voir</a>';
