@@ -1,13 +1,14 @@
 <?php
+
 namespace Djs\Application\Controller;
 
+use Djs\Application\AutenticationManager;
+use Djs\Application\Model\Athlete;
+use Djs\Application\Outils;
+use Djs\Application\Storage;
 use Djs\Framework\Request;
 use Djs\Framework\Response;
 use Djs\Framework\View;
-use Djs\Application\AutenticationManager;
-use Djs\Application\Storage;
-use Djs\Application\Outils;
-use Djs\Application\Model\Athlete;
 
 class AthleteController
 {
@@ -41,8 +42,8 @@ class AthleteController
         if (method_exists($this, $action)) {
             $this->$action();
         } else {
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
 
     }
@@ -55,9 +56,9 @@ class AthleteController
         if ($this->autenticationManager->isConnected()) {
             $this->autenticationManager->deconnexion();
             $this->outils->POSTredirect(".", "Déconnecté");
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -77,25 +78,10 @@ class AthleteController
             $response = json_decode($make_call, true);
             $_SESSION['user'] = $response;
             $this->outils->POSTredirect(".", "bonjour");
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
-    }
-
-    /**
-     * @return mixed Recuperation d'un utilisateur depuis STRAVA
-     */
-    public function getAthlete()
-    {
-        $data_array = array(
-            "access_token" => $_SESSION['user']['access_token'],
-        );
-
-        $make_call = $this->outils->callAPI('GET', 'https://www.strava.com/api/v3/athlete', $data_array);
-
-        $response = json_decode($make_call, true);
-        return $response;
     }
 
     /**
@@ -119,28 +105,13 @@ class AthleteController
     }
 
     /**
-     * Page d'accueil pour un utilisateur NON connecté
-     */
-    public function makeHomePage()
-    {
-        $title = "Bienvenue !";
-        //$content = '<img src="wallpaper.jpg" class="img-fluid" alt="Responsive image">';
-        $content = "<section> <div class='container-fluid' style='width: 100%; height: 1000px; background-attachment: fixed;
-        background-image: url(coach_w.jpg); background-size: 100% 100%; background-repeat: no-repeat; background-position: cover; overflow: hidden; '>";
-        $content .= '<div class="card container" style="width: 18rem; margin-top: 20%;"><a href="http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write" class="btn btn-light">Connexion via <img src="strava.png" width="40" height="40" alt="strava"></a></div>';
-        $content.='</div> </section>';
-        $this->view->setPart('title', $title);
-        $this->view->setPart('content', $content);
-    }
-
-    /**
      * Page d'accueil pour un Coach
      */
     public function makeCoachHomepage()
     {
         $title = "Bienvenue !";
         $content = "<section> <div class='container-fluid' style='width: 100%; height: 1000px; background-attachment: fixed;
-        background-image: url(wallpaper1.jpg); background-size: 100% 100%; background-repeat: no-repeat; background-position: cover; overflow: hidden; '></div> </section>";
+        background-image: url(wallpaper1.jpg); background-size: 100% 100%; background-repeat: no-repeat;  overflow: hidden; '></div> </section>";
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
     }
@@ -152,8 +123,23 @@ class AthleteController
     {
         $title = "Bienvenue !";
         $content = "<section> <div class='container-fluid' style='width: 100%; height: 1000px; background-attachment: fixed;
-        background-image: url(wallpaper1.jpg); background-size: 100% 100%; background-repeat: no-repeat; background-position: cover; overflow: hidden; '>";
-        $content.='</div> </section>';
+        background-image: url(wallpaper1.jpg); background-size: 100% 100%; background-repeat: no-repeat; overflow: hidden; '>";
+        $content .= '</div> </section>';
+        $this->view->setPart('title', $title);
+        $this->view->setPart('content', $content);
+    }
+
+    /**
+     * Page d'accueil pour un utilisateur NON connecté
+     */
+    public function makeHomePage()
+    {
+        $title = "Bienvenue !";
+        //$content = '<img src="wallpaper.jpg" class="img-fluid" alt="Responsive image">';
+        $content = "<section> <div class='container-fluid' style='width: 100%; height: 1000px; background-attachment: fixed;
+        background-image: url(coach_w.jpg); background-size: 100% 100%; background-repeat: no-repeat; background-position: cover; overflow: hidden; '>";
+        $content .= '<div class="card container" style="width: 18rem; margin-top: 20%;"><a href="http://www.strava.com/oauth/authorize?client_id=58487&response_type=code&redirect_uri=http://localhost:8888/STRAVA&approval_prompt=force&scope=activity:read_all,profile:read_all,activity:write" class="btn btn-light">Connexion via <img src="strava.png" width="40" height="40" alt="strava"></a></div>';
+        $content .= '</div> </section>';
         $this->view->setPart('title', $title);
         $this->view->setPart('content', $content);
     }
@@ -163,8 +149,8 @@ class AthleteController
      */
     public function inscriptionAthlete()
     {
-        if ($this->autenticationManager->isConnected()){
-            if (!$this->storage->isCoach($_SESSION['user']['athlete']['id']) && !$this->storage->isSportif($_SESSION['user']['athlete']['id'])){
+        if ($this->autenticationManager->isConnected()) {
+            if (!$this->storage->isCoach($_SESSION['user']['athlete']['id']) && !$this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
                 $content = '<br>';
                 $content .= '<p class="text-center">Inscription</p>';
                 $content .= '<h2 class="text-center">Choisissez votre type</h2><br>';
@@ -189,7 +175,7 @@ class AthleteController
         if ($this->autenticationManager->isConnected()) {
             if (!$this->storage->isCoach($_SESSION['user']['athlete']['id']) && !$this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
                 $a = $this->getAthlete();
-                if(isset($_GET['type'])) {
+                if (isset($_GET['type'])) {
                     $athlete = new Athlete($a['id'], $a['lastname'], $a['firstname'], $a['weight'], $_GET['type'], $a['profile_medium']);
                     $this->storage->createAthlete($athlete);
                     $this->outils->POSTredirect('.', 'Inscription faite');
@@ -197,6 +183,21 @@ class AthleteController
             }
         }
 
+    }
+
+    /**
+     * @return mixed Recuperation d'un utilisateur depuis STRAVA
+     */
+    public function getAthlete()
+    {
+        $data_array = array(
+            "access_token" => $_SESSION['user']['access_token'],
+        );
+
+        $make_call = $this->outils->callAPI('GET', 'https://www.strava.com/api/v3/athlete', $data_array);
+
+        $response = json_decode($make_call, true);
+        return $response;
     }
 
     /**
@@ -275,9 +276,9 @@ class AthleteController
             $content .= '</div></div></div>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 

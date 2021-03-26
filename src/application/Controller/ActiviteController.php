@@ -3,12 +3,12 @@
 namespace Djs\Application\Controller;
 
 use Djs\Application\AutenticationManager;
+use Djs\Application\Model\Activite;
+use Djs\Application\Outils;
 use Djs\Application\Storage;
 use Djs\Framework\Request;
 use Djs\Framework\Response;
 use Djs\Framework\View;
-use Djs\Application\Outils;
-use Djs\Application\Model\Activite;
 
 class ActiviteController
 {
@@ -50,12 +50,12 @@ class ActiviteController
             if (method_exists($this, $action)) {
                 $this->$action();
             } else {
-                $this->view->setPart('title','Forbidden page');
-                $this->view->setPart('content',$this->outils->forbiddenPage());
+                $this->view->setPart('title', 'Forbidden page');
+                $this->view->setPart('content', $this->outils->forbiddenPage());
             }
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
 
     }
@@ -70,10 +70,10 @@ class ActiviteController
      */
     public function nouvelleActivite()
     {
-        if(!$this->storage->isSportif($_SESSION['user']['athlete']['id'])){
+        if (!$this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
             $this->view->setPart('title', 'Nouvelle activité');
             $this->view->setPart('content', $this->outils->forbiddenPage());
-        }else{
+        } else {
             $content = '';
             $content .= '<div class="container"> <h2 class="text-center">Nouvelle activité</h2> <form method="post" action="?o=activite&a=sauverActivite">';
             $content .= '<div class="form-group"><label>Nom*</label>';
@@ -101,10 +101,11 @@ class ActiviteController
     /**
      * Formulaire modification Activité
      */
-    public function modifier(){
+    public function modifier()
+    {
         if ($this->storage->isMyActivite($this->request->getGetParam('id'))) {
             $activite = $this->storage->getActivite($_GET['id']);
-            $content = '<div class="container"> <h2 class="text-center">Modifier activité</h2> <form method="post" action="?o=activite&a=ConfModification&id='.$_GET['id'].'">';
+            $content = '<div class="container"> <h2 class="text-center">Modifier activité</h2> <form method="post" action="?o=activite&a=ConfModification&id=' . $_GET['id'] . '">';
             $content .= '<div class="form-group"><label>Nom*</label>';
             $content .= '<input type="text" class="form-control" placeholder="Titre de l\'activité" value="' . $activite->getNom() . '" name="nom" required></div>';
             $content .= '<div class="form-group"> <label>Description*</label>';
@@ -112,9 +113,9 @@ class ActiviteController
             $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Modifier</button> </form></div>';
             $this->view->setPart('title', 'Nouvelle activité');
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -123,7 +124,7 @@ class ActiviteController
      */
     public function sauverActivite()
     {
-        if($this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
+        if ($this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
             $elapsed_time = strtotime($_POST['duree']) - strtotime('TODAY');
             $data_array = array(
                 "access_token" => $_SESSION['user']['access_token'],
@@ -137,40 +138,41 @@ class ActiviteController
             $make_call = $this->outils->callAPI('POST', 'https://www.strava.com/api/v3/activities', json_encode($data_array));
             $response = json_decode($make_call, true);
             print_r($response);
-            if (isset($response['message'])){
+            if (isset($response['message'])) {
                 $this->outils->POSTredirect('?o=activite&a=nouvelleActivite', 'Activité non crée');
-            }else{
+            } else {
                 $activite = new Activite($response['id'], htmlspecialchars($response['name']), htmlspecialchars($response['description']), $response['distance'] / 1000, $response['start_date_local'], $response['elapsed_time'], $_SESSION['user']['athlete']['id'], date('Y-m-d H:i:s'));
                 $this->storage->createActivite($activite);
                 $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité crée');
             }
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
     /**
      * Modification d'une activité
      */
-    public function ConfModification(){
+    public function ConfModification()
+    {
         if ($this->storage->isMyActivite($this->request->getGetParam('id'))) {
             $data_array = array(
                 "access_token" => $_SESSION['user']['access_token'],
                 "name" => $_POST['nom'],
                 "description" => $_POST['description'],
             );
-            $make_call = $this->outils->callAPI('PUT', 'https://www.strava.com/api/v3/activities/'.$_GET['id'], json_encode($data_array));
+            $make_call = $this->outils->callAPI('PUT', 'https://www.strava.com/api/v3/activities/' . $_GET['id'], json_encode($data_array));
             $response = json_decode($make_call, true);
-            if (isset($response['message'])){
+            if (isset($response['message'])) {
                 $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité non modifié');
-            }else{
-                $this->storage->modifierActvitie($_GET['id'],htmlspecialchars($response['name']),htmlspecialchars($response['description']));
+            } else {
+                $this->storage->modifierActvitie($_GET['id'], htmlspecialchars($response['name']), htmlspecialchars($response['description']));
                 $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité modifié');
             }
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -179,7 +181,7 @@ class ActiviteController
      */
     public function mesActivites()
     {
-        if($this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
+        if ($this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
             $res = $this->storage->getMyActivites($_SESSION['user']['athlete']['id']);
             $title = "Mes activités";
             $content = '<div class="container"> <h2 class="text-center">Mes activités</h2> <div class="col">';
@@ -203,9 +205,9 @@ class ActiviteController
             $content .= '</div></div>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -225,9 +227,9 @@ class ActiviteController
             $content .= '</div></div></form>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -240,12 +242,12 @@ class ActiviteController
             if ($_POST['ouiNon'] == 'oui') {
                 $this->storage->supprimerActivite($this->request->getGetParam('id'));
                 $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité supprimée');
-            }else{
+            } else {
                 $this->outils->POSTredirect('?o=activite&a=mesActivites', 'Activité non supprimée');
             }
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 

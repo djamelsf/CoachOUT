@@ -1,19 +1,25 @@
 <?php
+
 namespace Djs\Application;
+
 use Djs\Application\Model\Activite;
 use Djs\Application\Model\Athlete;
 use Djs\Application\Model\Commentaire;
 use Djs\Application\Model\Groupe;
-/**
- * 
- */
-class StorageMySQL implements Storage {
+use PDO;
 
-	public $connexion;
-	
-	function __construct($connexion){
-		$this->connexion=$connexion;		
-	}
+/**
+ *
+ */
+class StorageMySQL implements Storage
+{
+
+    public $connexion;
+
+    function __construct($connexion)
+    {
+        $this->connexion = $connexion;
+    }
 
     public function createAthlete(Athlete $athlete)
     {
@@ -23,19 +29,19 @@ class StorageMySQL implements Storage {
             ':id' => $athlete->getIdU(),
             ':nom' => $athlete->getNom(),
             ':prenom' => $athlete->getPrenom(),
-            ':weight' => $athlete->getWeight().'',
+            ':weight' => $athlete->getWeight() . '',
             ':type' => $athlete->getType(),
             ':imageUrl' => $athlete->getImageUrl(),
         );
-        $t=$stmt->execute($data);
+        $t = $stmt->execute($data);
         if ($t) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
-    public function ajouterAthleteGrp($idG,$idU)
+    public function ajouterAthleteGrp($idG, $idU)
     {
         $rq = "INSERT INTO adhere (idU,idG) VALUES (:idU,:idG)";
         $stmt = $this->connexion->prepare($rq);
@@ -43,10 +49,10 @@ class StorageMySQL implements Storage {
             ':idU' => $idU,
             ':idG' => $idG,
         );
-        $t=$stmt->execute($data);
+        $t = $stmt->execute($data);
         if ($t) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -66,10 +72,10 @@ class StorageMySQL implements Storage {
             ':time' => $activite->getTime(),
 
         );
-        $t=$stmt->execute($data);
+        $t = $stmt->execute($data);
         if ($t) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -83,7 +89,7 @@ class StorageMySQL implements Storage {
             ':description' => $groupe->getDescription(),
             ':idU' => $_SESSION['user']['athlete']['id'],
         );
-        $t=$stmt->execute($data);
+        $t = $stmt->execute($data);
         if ($t) {
             return $this->connexion->lastInsertId();
         }
@@ -99,7 +105,7 @@ class StorageMySQL implements Storage {
             ':idU' => $commentaire->getIdU(),
             ':idAc' => $commentaire->getIdAc(),
         );
-        $t=$stmt->execute($data);
+        $t = $stmt->execute($data);
         if ($t) {
             return $this->connexion->lastInsertId();
         }
@@ -113,7 +119,7 @@ class StorageMySQL implements Storage {
             ':idU' => $_SESSION['user']['athlete']['id'],
             ':idG' => $idG,
         );
-        $t=$stmt->execute($data);
+        $t = $stmt->execute($data);
         if ($t) {
             return $this->connexion->lastInsertId();
         }
@@ -131,7 +137,7 @@ class StorageMySQL implements Storage {
         $result = $stmt->fetchAll();
         if (empty($result)) {
             return 0;
-        }else{
+        } else {
             return 1;
         }
     }
@@ -148,12 +154,13 @@ class StorageMySQL implements Storage {
         $result = $stmt->fetchAll();
         if (empty($result)) {
             return 0;
-        }else{
+        } else {
             return 1;
         }
     }
 
-    public function isCoach($id){
+    public function isCoach($id)
+    {
         $rq = "SELECT * FROM user WHERE idU= :id AND type= 'coach'";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
@@ -163,12 +170,13 @@ class StorageMySQL implements Storage {
         $result = $stmt->fetchAll();
         if (empty($result)) {
             return 0;
-        }else{
+        } else {
             return 1;
         }
     }
 
-    public function isSportif($id){
+    public function isSportif($id)
+    {
         $rq = "SELECT * FROM user WHERE idU= :id AND type= 'sportif'";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
@@ -178,7 +186,7 @@ class StorageMySQL implements Storage {
         $result = $stmt->fetchAll();
         if (empty($result)) {
             return 0;
-        }else{
+        } else {
             return 1;
         }
     }
@@ -195,13 +203,14 @@ class StorageMySQL implements Storage {
         $result = $stmt->fetchAll();
         if (empty($result)) {
             return 0;
-        }else{
+        } else {
             return 1;
         }
     }
 
 
-    public function existsAthlete($id){
+    public function existsAthlete($id)
+    {
         $rq = "SELECT * FROM user WHERE idU= :idU";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
@@ -211,13 +220,13 @@ class StorageMySQL implements Storage {
         $result = $stmt->fetchAll();
         if (empty($result)) {
             return 0;
-        }else{
+        } else {
             return 1;
         }
 
-	}
+    }
 
-	public function getUser($id)
+    public function getUser($id)
     {
         $rq = "SELECT * FROM user WHERE idU= :idU";
         $stmt = $this->connexion->prepare($rq);
@@ -225,9 +234,9 @@ class StorageMySQL implements Storage {
             ':idU' => $id,
         );
         $stmt->execute($data);
-        $user=null;
-        if ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $user=new Athlete($id,$setup['nom'],$setup['prenom'],$setup['weight'],$setup['type'],$setup['imageUrl']);
+        $user = null;
+        if ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $user = new Athlete($id, $setup['nom'], $setup['prenom'], $setup['weight'], $setup['type'], $setup['imageUrl']);
         }
         return $user;
     }
@@ -240,9 +249,9 @@ class StorageMySQL implements Storage {
             ':idU' => $id,
         );
         $stmt->execute($data);
-        $tab=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            array_push($tab, new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time'],$setup['idU'],$setup['time']));
+        $tab = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            array_push($tab, new Activite($setup['idAc'], $setup['nom'], $setup['description'], $setup['distance'], $setup['date'], $setup['elapsed_time'], $setup['idU'], $setup['time']));
         }
 
         return $tab;
@@ -250,15 +259,15 @@ class StorageMySQL implements Storage {
 
     public function getActivitesByGroupe($id)
     {
-        $rq="SELECT * FROM adhere,activite WHERE adhere.idG= :id AND adhere.idU=activite.idU ORDER BY activite.time DESC";
+        $rq = "SELECT * FROM adhere,activite WHERE adhere.idG= :id AND adhere.idU=activite.idU ORDER BY activite.time DESC";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':id' => $id,
         );
         $stmt->execute($data);
-        $tab=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            array_push($tab, new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time'],$setup['idU'],$setup['time']));
+        $tab = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            array_push($tab, new Activite($setup['idAc'], $setup['nom'], $setup['description'], $setup['distance'], $setup['date'], $setup['elapsed_time'], $setup['idU'], $setup['time']));
         }
         return $tab;
     }
@@ -272,9 +281,9 @@ class StorageMySQL implements Storage {
             ':idU' => $id,
         );
         $stmt->execute($data);
-        $tab=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $tab[$setup['idG']]=new Groupe($setup['nom'],$setup['description'],$setup['idU']);
+        $tab = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $tab[$setup['idG']] = new Groupe($setup['nom'], $setup['description'], $setup['idU']);
         }
 
         return $tab;
@@ -288,9 +297,9 @@ class StorageMySQL implements Storage {
             ':idG' => $id,
         );
         $stmt->execute($data);
-        $groupe=null;
-        if ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $groupe=new Groupe($setup['nom'],$setup['description'],$setup['idU']);
+        $groupe = null;
+        if ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $groupe = new Groupe($setup['nom'], $setup['description'], $setup['idU']);
         }
         return $groupe;
     }
@@ -303,9 +312,9 @@ class StorageMySQL implements Storage {
             ':idG' => $id,
         );
         $stmt->execute($data);
-        $c=null;
-        if ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $c=$setup['idU'];
+        $c = null;
+        if ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $c = $setup['idU'];
         }
         return $c;
     }
@@ -315,12 +324,12 @@ class StorageMySQL implements Storage {
         $rq = "SELECT * FROM groupe WHERE nom LIKE :nom";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
-            ':nom' => '%'.$text.'%',
+            ':nom' => '%' . $text . '%',
         );
         $stmt->execute($data);
-        $tab=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $tab[$setup['idG']]=new Groupe($setup['nom'],$setup['description'],$setup['idU']);
+        $tab = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $tab[$setup['idG']] = new Groupe($setup['nom'], $setup['description'], $setup['idU']);
         }
 
         return $tab;
@@ -328,15 +337,15 @@ class StorageMySQL implements Storage {
 
     public function getAthleteGroupes()
     {
-        $rq="SELECT * FROM adhere,groupe WHERE adhere.idU= :id AND groupe.idG=adhere.idG";
+        $rq = "SELECT * FROM adhere,groupe WHERE adhere.idU= :id AND groupe.idG=adhere.idG";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':id' => $_SESSION['user']['athlete']['id'],
         );
         $stmt->execute($data);
-        $tab=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $tab[$setup['idG']]=new Groupe($setup['nom'],$setup['description'],$setup['idU']);
+        $tab = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $tab[$setup['idG']] = new Groupe($setup['nom'], $setup['description'], $setup['idU']);
         }
 
         return $tab;
@@ -350,13 +359,14 @@ class StorageMySQL implements Storage {
             ':id' => $id
         );
         $stmt->execute($data);
-        $tab=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $tab[$setup['idC']]=new Commentaire($setup['texte'],$setup['date'],$setup['idU'],$setup['idAc']);
+        $tab = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $tab[$setup['idC']] = new Commentaire($setup['texte'], $setup['date'], $setup['idU'], $setup['idAc']);
         }
 
         return $tab;
     }
+
     public function getActivite($id)
     {
         $rq = "SELECT * FROM activite WHERE idAc= :idAc";
@@ -365,9 +375,9 @@ class StorageMySQL implements Storage {
             ':idAc' => $id,
         );
         $stmt->execute($data);
-        $res=null;
-        if ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $res=new Activite($setup['idAc'],$setup['nom'],$setup['description'],$setup['distance'],$setup['date'],$setup['elapsed_time'],$setup['idU'],$setup['time']);
+        $res = null;
+        if ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $res = new Activite($setup['idAc'], $setup['nom'], $setup['description'], $setup['distance'], $setup['date'], $setup['elapsed_time'], $setup['idU'], $setup['time']);
         }
 
         return $res;
@@ -379,44 +389,44 @@ class StorageMySQL implements Storage {
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':id' => $_SESSION['user']['athlete']['id'],
-            ':nom' => '%'.$nom.'%',
+            ':nom' => '%' . $nom . '%',
         );
         $stmt->execute($data);
-        $tab=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $tab[$setup['idU']]=new Athlete($setup['idU'],$setup['nom'],$setup['prenom'],$setup['weight'],$setup['type'],$setup['imageUrl']);
+        $tab = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $tab[$setup['idU']] = new Athlete($setup['idU'], $setup['nom'], $setup['prenom'], $setup['weight'], $setup['type'], $setup['imageUrl']);
         }
         return $tab;
     }
 
     public function getActivitesOdered($id)
     {
-        $rq="SELECT * FROM activite WHERE idU= :idU ORDER by activite.date DESC";
+        $rq = "SELECT * FROM activite WHERE idU= :idU ORDER by activite.date DESC";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':idU' => $id,
         );
         $stmt->execute($data);
-        $labels=[];
-        $data=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            array_push($labels,$setup['date']);
-            array_push($data,($setup['distance']));
+        $labels = [];
+        $data = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            array_push($labels, $setup['date']);
+            array_push($data, ($setup['distance']));
         }
-        return [$labels,$data];
+        return [$labels, $data];
     }
 
     public function getGroupeMembres($id)
     {
-        $rq="SELECT * FROM adhere WHERE idG= :idG";
+        $rq = "SELECT * FROM adhere WHERE idG= :idG";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':idG' => $id,
         );
         $stmt->execute($data);
-        $res=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            array_push($res,$setup['idU']);
+        $res = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            array_push($res, $setup['idU']);
         }
         return $res;
     }
@@ -430,7 +440,7 @@ class StorageMySQL implements Storage {
         );
         if ($stmt->execute($data)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -444,7 +454,7 @@ class StorageMySQL implements Storage {
         );
         if ($stmt->execute($data)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -459,28 +469,28 @@ class StorageMySQL implements Storage {
         );
         if ($stmt->execute($data)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
     public function classementGroupe($id)
     {
-        $rq='SELECT * FROM (SELECT SUM(activite.distance) AS activiteSUM, adhere.idU FROM activite,adhere,groupe WHERE activite.idU=adhere.idU AND groupe.idG=adhere.idG AND groupe.idG= :id GROUP BY(adhere.idU)) AS TP ORDER BY(TP.activiteSUM) DESC LIMIT 3';
+        $rq = 'SELECT * FROM (SELECT SUM(activite.distance) AS activiteSUM, adhere.idU FROM activite,adhere,groupe WHERE activite.idU=adhere.idU AND groupe.idG=adhere.idG AND groupe.idG= :id GROUP BY(adhere.idU)) AS TP ORDER BY(TP.activiteSUM) DESC LIMIT 3';
         $stmt = $this->connexion->prepare($rq);
         $data = array(
             ':id' => $id,
         );
         $stmt->execute($data);
-        $tab=[];
-        while ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $tab[$setup['idU']]=$setup['activiteSUM'];
+        $tab = [];
+        while ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $tab[$setup['idU']] = $setup['activiteSUM'];
         }
 
         return $tab;
     }
 
-    public function athleteisInGroupe($id,$idG)
+    public function athleteisInGroupe($id, $idG)
     {
         $rq = "SELECT * FROM adhere WHERE idU= :idU AND idG= :idG";
         $stmt = $this->connexion->prepare($rq);
@@ -492,12 +502,13 @@ class StorageMySQL implements Storage {
         $result = $stmt->fetchAll();
         if (empty($result)) {
             return 0;
-        }else{
+        } else {
             return 1;
         }
     }
 
-    public function supprimerAthlete($idU,$idG){
+    public function supprimerAthlete($idU, $idG)
+    {
         $rq = "DELETE FROM adhere WHERE idG= :idG AND idU= :idU";
         $stmt = $this->connexion->prepare($rq);
         $data = array(
@@ -506,7 +517,7 @@ class StorageMySQL implements Storage {
         );
         if ($stmt->execute($data)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -519,9 +530,9 @@ class StorageMySQL implements Storage {
             ':idU' => $id,
         );
         $stmt->execute($data);
-        $c=null;
-        if ($setup = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $c=[$setup['SUM(activite.distance)'],$setup['SUM(activite.elapsed_time)']];
+        $c = null;
+        if ($setup = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $c = [$setup['SUM(activite.distance)'], $setup['SUM(activite.elapsed_time)']];
         }
         return $c;
     }
@@ -537,11 +548,12 @@ class StorageMySQL implements Storage {
         );
         if ($stmt->execute($data)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    public function modifierGroupe($id,$nom,$description)
+
+    public function modifierGroupe($id, $nom, $description)
     {
         $rq = "UPDATE groupe SET nom= :nom, description= :description WHERE idG= :id";
         $stmt = $this->connexion->prepare($rq);
@@ -552,7 +564,7 @@ class StorageMySQL implements Storage {
         );
         if ($stmt->execute($data)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -560,4 +572,4 @@ class StorageMySQL implements Storage {
 
 }
 
- ?>
+?>

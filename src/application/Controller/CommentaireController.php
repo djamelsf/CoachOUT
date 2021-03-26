@@ -2,13 +2,13 @@
 
 namespace Djs\Application\Controller;
 
+use Djs\Application\AutenticationManager;
+use Djs\Application\Model\Commentaire;
+use Djs\Application\Outils;
+use Djs\Application\Storage;
 use Djs\Framework\Request;
 use Djs\Framework\Response;
 use Djs\Framework\View;
-use Djs\Application\AutenticationManager;
-use Djs\Application\Storage;
-use Djs\Application\Outils;
-use Djs\Application\Model\Commentaire;
 
 class CommentaireController
 {
@@ -41,15 +41,15 @@ class CommentaireController
 
     public function execute($action)
     {
-        if($this->autenticationManager->isConnected()) {
+        if ($this->autenticationManager->isConnected()) {
             if (method_exists($this, $action)) {
                 $this->$action();
             } else {
                 echo "wrong function";
             }
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
 
     }
@@ -63,7 +63,7 @@ class CommentaireController
      */
     public function show()
     {
-        if($this->storage->getActivite($this->request->getGetParam('idAc')) != null) {
+        if ($this->storage->getActivite($this->request->getGetParam('idAc')) != null) {
             $idAc = $this->request->getGetParam('idAc');
             $activite = $this->storage->getActivite($idAc);
             if (!empty($_POST)) {
@@ -105,9 +105,9 @@ class CommentaireController
             $content .= '</div></div>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 

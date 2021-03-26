@@ -2,13 +2,13 @@
 
 namespace Djs\Application\Controller;
 
+use Djs\Application\AutenticationManager;
+use Djs\Application\Model\Groupe;
+use Djs\Application\Outils;
+use Djs\Application\Storage;
 use Djs\Framework\Request;
 use Djs\Framework\Response;
 use Djs\Framework\View;
-use Djs\Application\AutenticationManager;
-use Djs\Application\Storage;
-use Djs\Application\Outils;
-use Djs\Application\Model\Groupe;
 
 class GroupeController
 {
@@ -32,16 +32,16 @@ class GroupeController
 
     public function execute($action)
     {
-        if($this->autenticationManager->isConnected()){
+        if ($this->autenticationManager->isConnected()) {
             if (method_exists($this, $action)) {
                 $this->$action();
             } else {
-                $this->view->setPart('title','Forbidden page');
-                $this->view->setPart('content',$this->outils->forbiddenPage());
+                $this->view->setPart('title', 'Forbidden page');
+                $this->view->setPart('content', $this->outils->forbiddenPage());
             }
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
 
     }
@@ -61,9 +61,9 @@ class GroupeController
             $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Ajouter</button>';
             $this->view->setPart('title', 'Inscription');
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
 
     }
@@ -71,32 +71,35 @@ class GroupeController
     /**
      * Formulaire modification groupe
      */
-    public function modifier(){
+    public function modifier()
+    {
         if ($this->storage->isCoachOfGroupe($idG = $this->request->getGetParam('id'))) {
-            $groupe=$this->storage->getGroupe($_GET['id']);
+            $groupe = $this->storage->getGroupe($_GET['id']);
             $content = '<div class="container"> <h2 class="text-center">Modifier groupe</h2>';
-            $content .= '<form method="post" action="?o=groupe&a=confModification&id='.$_GET['id'].'">';
+            $content .= '<form method="post" action="?o=groupe&a=confModification&id=' . $_GET['id'] . '">';
             $content .= '<div class="form-group"> <label for="inputName">Nom</label>';
-            $content .= '<input type="text" class="form-control" id="inputName" placeholder="Nom du groupe" name="nom" value="'.$groupe->getNom().'" required> </div>';
+            $content .= '<input type="text" class="form-control" id="inputName" placeholder="Nom du groupe" name="nom" value="' . $groupe->getNom() . '" required> </div>';
             $content .= '<div class="form-group"> <label for="inputName">Description</label>';
-            $content .= '<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="description" required>'.$groupe->getDescription().'</textarea> </div>';
+            $content .= '<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="description" required>' . $groupe->getDescription() . '</textarea> </div>';
             $content .= '<button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Modifier</button>';
             $this->view->setPart('title', 'Modification groupe');
             $this->view->setPart('content', $content);
 
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
 
     }
-    public function confModification(){
+
+    public function confModification()
+    {
         if ($this->storage->isCoachOfGroupe($idG = $this->request->getGetParam('id'))) {
-            $this->storage->modifierGroupe($_GET['id'],htmlspecialchars($_POST['nom']),htmlspecialchars($_POST['description']));
+            $this->storage->modifierGroupe($_GET['id'], htmlspecialchars($_POST['nom']), htmlspecialchars($_POST['description']));
             $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Groupe modifié');
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -109,9 +112,9 @@ class GroupeController
             $groupe = new Groupe(htmlspecialchars($_POST['nom']), htmlspecialchars($_POST['description']), $_SESSION['user']['athlete']['id']);
             $this->storage->createGroupe($groupe);
             $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Groupe crée');
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
 
     }
@@ -138,9 +141,9 @@ class GroupeController
             $content .= '</div></div>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -160,9 +163,9 @@ class GroupeController
             $content .= '</div></div></form>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -175,12 +178,12 @@ class GroupeController
             if ($_POST['ouiNon'] == 'oui') {
                 $this->storage->supprimerGroupe($this->request->getGetParam('id'));
                 $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Groupe supprimé');
-            }else{
+            } else {
                 $this->outils->POSTredirect('?o=groupe&a=mesGroupes', 'Groupe non supprimé');
             }
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -200,9 +203,9 @@ class GroupeController
             $content .= '</div></div></form>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -215,12 +218,12 @@ class GroupeController
             if ($_POST['ouiNon'] == 'oui') {
                 $this->storage->quitterGroupe($this->request->getGetParam('id'));
                 $this->outils->POSTredirect('?o=groupe&a=groupes', 'Vous avez quitté un groupe');
-            }else{
+            } else {
                 $this->outils->POSTredirect('?o=groupe&a=groupes', 'Action annulée');
             }
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -343,7 +346,7 @@ class GroupeController
      */
     public function showMyGroupe()
     {
-        if ($this->storage->isCoachOfGroupe( $this->request->getGetParam('id'))) {
+        if ($this->storage->isCoachOfGroupe($this->request->getGetParam('id'))) {
             $res = $this->storage->getActivitesByGroupe($this->request->getGetParam('id'));
             $id = $this->request->getGetParam('id');
             $groupe = $this->storage->getGroupe($id);
@@ -382,9 +385,9 @@ class GroupeController
             $content .= '</ul> <a href="?o=groupe&a=inviter&id=' . $id . '" style="background-color: #fc5200; border-color: #fc5200;" class="btn btn-primary">Inviter/Supprimer un athlète</a> </div> </div> </div>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -397,9 +400,9 @@ class GroupeController
             $id = $this->request->getGetParam('id');
             $this->storage->adherer($id);
             $this->outils->POSTredirect('?o=groupe&a=show&id=' . $id, 'vous venez de rejoindre un nouveau groupe');
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -408,15 +411,15 @@ class GroupeController
      */
     public function inviter()
     {
-        if ($this->storage->isCoachOfGroupe( $this->request->getGetParam('id'))) {
+        if ($this->storage->isCoachOfGroupe($this->request->getGetParam('id'))) {
             $title = "inviter";
             $content = '<form class="container" method="get"> <div class="form-group"> <input type="hidden" name="id" value="' . $_GET['id'] . '"> <input type="hidden" name="o" value="groupe"> <input type="hidden" name="a" value="confInvit"> <input type="text" name="nomU" class="form-control" placeholder="Nom/Prénom Athlète">';
             $content .= '</div> <button type="submit" class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;">Chercher</button> <a class="btn btn-primary" style="background-color:#fc5200; border-color: #fc5200;" href="?id=' . $_GET['id'] . '&o=groupe&a=confInvit&nomU=">Tous les athlètes</a></form>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -425,7 +428,7 @@ class GroupeController
      */
     public function confInvit()
     {
-        if ($this->storage->isCoachOfGroupe( $this->request->getGetParam('id'))) {
+        if ($this->storage->isCoachOfGroupe($this->request->getGetParam('id'))) {
             $title = "inviter";
             $content = '';
             $mot = $this->request->getGetParam('nomU');
@@ -449,9 +452,9 @@ class GroupeController
             $content .= '</div>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -460,7 +463,7 @@ class GroupeController
      */
     public function supprAt()
     {
-        if ($this->storage->isCoachOfGroupe( $this->request->getGetParam('idG'))) {
+        if ($this->storage->isCoachOfGroupe($this->request->getGetParam('idG'))) {
             $idG = $this->request->getGetParam('idG');
             $idU = $this->request->getGetParam('idU');
             if ($this->storage->getCoachGroupe($idG) == $_SESSION['user']['athlete']['id']) {
@@ -469,9 +472,9 @@ class GroupeController
             } else {
                 $this->outils->POSTredirect('.', 'Erreur');
             }
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -480,14 +483,14 @@ class GroupeController
      */
     public function ajout()
     {
-        if ($this->storage->isCoachOfGroupe( $this->request->getGetParam('idG'))) {
+        if ($this->storage->isCoachOfGroupe($this->request->getGetParam('idG'))) {
             $idg = $this->request->getGetParam('idG');
             $idu = $this->request->getGetParam('idU');
             $this->storage->ajouterAthleteGrp($idg, $idu);
             $this->outils->POSTredirect('?o=groupe&a=show&id=' . $idg, 'Athlète ajouté');
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
@@ -520,7 +523,8 @@ class GroupeController
     /**
      * liste des groupes d'un athlète
      */
-    public function groupes(){
+    public function groupes()
+    {
         if ($this->storage->isSportif($_SESSION['user']['athlete']['id'])) {
             $title = "Mes groupes";
             $res = $this->storage->getAthleteGroupes();
@@ -540,9 +544,9 @@ class GroupeController
             $content .= '</div></div>';
             $this->view->setPart('title', $title);
             $this->view->setPart('content', $content);
-        }else{
-            $this->view->setPart('title','Forbidden page');
-            $this->view->setPart('content',$this->outils->forbiddenPage());
+        } else {
+            $this->view->setPart('title', 'Forbidden page');
+            $this->view->setPart('content', $this->outils->forbiddenPage());
         }
     }
 
